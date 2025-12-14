@@ -25,7 +25,6 @@ jobs:
         with:
           activate-environment: BENTOLAB-HIERARCHSIR 
           environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
-          auto-activate: false
 
       - name: Run backfill script
         shell: bash -l {0}
