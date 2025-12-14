@@ -60,29 +60,26 @@ for i in range(len(dfs) - 3 + 1):
 ## Fit a beta-binomial model to estimate average missigness of reported data ##
 ###############################################################################
 
-# For each state i and week X we observe:
-#
-#   y_{i,X}^{(0)}  = number of influenza admissions in week X reported in week X+0
-#   y_{i,X}^{(1)}  = number of influenza admissions in week X reported in week X+1
-#   y_{i,X}^{(2)}  = number of influenza admissions in week X reported in week X+2
-#
-# where y_{i,X}^{(2)} is treated as the "final" count after accoutning for reporting delays.
-# We assume monotone backfill: early reports are a thinning of the final count.
-#
-#   y_{i,X-1}^{(1)} ~  Binomial(y_{i,X-1}^{(2)}, p_i_12)   # We learn how much the previous datapoint changes from t=1 week to t=2 weeks after release
-#   y_{i,X}^{(0)} ~  Binomial(y_{i,X}^{(2)}, p_i_02)       # We learn how much the current datapoint changes from t=0 weeks to t=2 weeks after release
-#
-# To stabilize estimation in states with sparse data, we use a Beta prior on p:
-#
-#   p_i ~ Beta(alpha, beta)
-#
-# Summing counts of state i over the available weeks, the posterior distribution (for 0 --> 2) can be computed analytically:
-#
-#   p_i | data ~ Beta(
-#       alpha + sum_y0_i,
-#       beta  + (sum_y2_i - sum_y0_i)
-#   )
-# Which for alpha = beta = 1 and sum_y0_i >> 1, sum_y2_i >> 1 is simply the ratio of the sum of the backfilled to non-filled cases over the horizon. 
+# I've implemented a binomial thinning model to try and correct the backfill in the most recent (week X)
+# and second most recent (week X-1) preliminary NHSN HRD datapoints, when it is released in week X.
+# Backfill becomes practically negligible by week X-2. The model is a binomial thinning model with a Beta prior on the probability of success `p`,
+# ```
+# y_{X, X} ~ Binomial(y_{X, X+2}, p)
+# p ~ Beta(alpha, beta) with alpha=20, beta=1 so that E[p] \approx 0.95
+# ```
+# where `y_{X,X}` is the data of week X, released in week X, which is a fraction `p` of the "actual data" `y_{X, X+2}` which we only find after 2 weeks of backfilling.
+# After finding `p` by calibrating it to multiple observations, we can then attempt to estimate what the data will be in two weeks using,
+# ```
+# y*_{X, X} = y_{X, X} / p.
+# ```
+# The cool thing is this model's posterior probability mean has an analytical solution that is intuitive,
+# ```
+# Mean(p) = (alpha + sum_i[y_{X, X, i}]) / (beta + (sum_i[y_{X, X+2, i}] - sum_i[y_{X, X, i}]))
+# ```
+# Here `i` is used to index the datapoints (datapoints released at least two weeks prior so we have info on how big the backfilling was).
+# You just sum the influenza admissions upon release of the data up `sum_i[y_{X, X, i}]`, and you do the same to these data two weeks down the line `sum_i[y_{X, X+2, i}]`. For states with a lot of influenza admissions `sum_i[y_{X, X, i}] >> alpha, beta` this estimator is just the relative backfill, while states with more minor counts get pulled towards 95% completeness which buffers against noise.
+# I've implemented a similar procedure to correct `y_{X-1, X}` (previous week data, released this week) as a fraction of `y_{X-1, X+1}`.
+# Altough most `p` values here seem to fall in the 0.98-1.00 range indicating backfill is already negligible by week 2.
 
 # Beta distribution priors
 alpha_02 = 20
