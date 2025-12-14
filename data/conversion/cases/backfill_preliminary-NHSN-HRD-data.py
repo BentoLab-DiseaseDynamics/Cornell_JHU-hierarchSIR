@@ -62,19 +62,21 @@ for i in range(len(dfs) - 3 + 1):
 
 # For each state i and week X we observe:
 #
-#   y_{i,X}^{(0)}  = number of influenza admissions reported in week X
-#   y_{i,X}^{(2)}  = number of influenza admissions reported in week X+2
+#   y_{i,X}^{(0)}  = number of influenza admissions in week X reported in week X+0
+#   y_{i,X}^{(1)}  = number of influenza admissions in week X reported in week X+1
+#   y_{i,X}^{(2)}  = number of influenza admissions in week X reported in week X+2
 #
-# where y_{i,X}^{(2)} is treated as the "final" count after reporting delays.
+# where y_{i,X}^{(2)} is treated as the "final" count after accoutning for reporting delays.
 # We assume monotone backfill: early reports are a thinning of the final count.
 #
-#   y_{i,X}^{(0)} | y_{i,X}^{(2)}, p_i  ~  Binomial(y_{i,X}^{(2)}, p_i)
+#   y_{i,X-1}^{(1)} ~  Binomial(y_{i,X-1}^{(2)}, p_i_12)   # We learn how much the previous datapoint changes from t=1 week to t=2 weeks after release
+#   y_{i,X}^{(0)} ~  Binomial(y_{i,X}^{(2)}, p_i_02)       # We learn how much the current datapoint changes from t=0 weeks to t=2 weeks after release
 #
 # To stabilize estimation in states with sparse data, we use a Beta prior on p:
 #
 #   p_i ~ Beta(alpha, beta)
 #
-# Summing counts of state i over the available weeks, the posterior distribution can be computed analytically:
+# Summing counts of state i over the available weeks, the posterior distribution (for 0 --> 2) can be computed analytically:
 #
 #   p_i | data ~ Beta(
 #       alpha + sum_y0_i,
@@ -130,7 +132,7 @@ posterior["p_12_high_90"] = beta_dist.ppf(
     0.95, alpha_post, beta_post
 )
 
-# Cap all cases where p > 1 to p = 1 (assumption that all retracting cases represents errors)
+# Cap all cases where p > 1 to p = 1 (assumption that all retraction of cases represents an error)
 posterior = posterior.fillna(1)
 
 ###############################################
@@ -154,7 +156,7 @@ latest_df = latest_df.drop(columns=['p_02_mean', 'p_12_mean'])
 
 # deliberately chose not to round values --> we use a poisson likelihood function to fit the model which is continuous
 
-# Save backfill amounts and data
+# Save beta-binomial estimates and the data
 parquet_filenames = [os.path.basename(f) for f in parquet_files]
 posterior.to_csv(os.path.join(abs_dir, '../../interim/cases/NHSN-HRD_archive/preliminary_backfilled/'+parquet_filenames[-1][:-13]+'_backfill_beta-binomial-estimates.csv'))
 latest_df.to_parquet(os.path.join(abs_dir, '../../interim/cases/NHSN-HRD_archive/preliminary_backfilled/'+parquet_filenames[-1]), compression='gzip', index=False)
