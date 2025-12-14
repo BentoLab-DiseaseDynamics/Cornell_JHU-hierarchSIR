@@ -55,7 +55,7 @@ latest_forecast_file, reference_date = max(files_with_time, key=lambda x: x[1]) 
 ############################
 
 # get the latest data (dummy)
-data, _, _, _ = make_data_pySODM_compatible(datetime(2000,1,1), datetime(3000,2,1), 1, preliminary=True)
+data, _, _, _ = make_data_pySODM_compatible(datetime(2000,1,1), datetime(3000,2,1), 1, type='preliminary_backfilled')
 end_date = max(data[0].index)
 # helper function
 def get_influenza_season_label(date: datetime) -> str:
@@ -125,7 +125,7 @@ for name_state, fips_state in zip(name_state_list, fips_state_list):
     fc['value'] = fc['value'] / pop * 10E5
 
     # get data
-    data, _, _, _ = make_data_pySODM_compatible(start_date, end_date+timedelta(days=1), fips_state, preliminary=True)
+    data, _, _, _ = make_data_pySODM_compatible(start_date, end_date+timedelta(days=1), fips_state, type='preliminary_backfilled')
 
     # normalize data
     pop = demography.loc[demography['fips_state'] == fips_state, 'population'].values[0]

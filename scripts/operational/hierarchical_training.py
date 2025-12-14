@@ -95,7 +95,7 @@ if __name__ == '__main__':
             # get data
             datasets = []
             for start_calibration, end_calibration, season in zip(start_calibrations, end_calibrations, seasons):
-                data, _, _, _ = make_data_pySODM_compatible(start_calibration, end_calibration, fips_state, preliminary=False)
+                data, _, _, _ = make_data_pySODM_compatible(start_calibration, end_calibration, fips_state, type='consolidated')
                 datasets.append(data)
 
             #################

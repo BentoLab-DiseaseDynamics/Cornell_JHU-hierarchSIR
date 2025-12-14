@@ -1,17 +1,10 @@
-name: Fetch preliminary NHSN HRD dataset
-
+name: Backfill preliminary NHSN HRD dataset
 on:
-# +---------------- minute (0 - 59)
-# |  +------------- hour (0 - 23)
-# |  |  +---------- day of month (1 - 31)
-# |  |  |  +------- month (1 - 12)
-# |  |  |  |  +---- day of week (0 - 6) (Sunday=0 or 7)
-# |  |  |  |  |
-# *  *  *  *  *  command to be executed
-  schedule:
-    - cron: '0 18 * 10-12 3' # Runs every Wednesday at 1:00 PM EDT (6:00 PM UTC) -- months 10-12
-    - cron: '0 18 * 1-5 3' # Runs every Wednesday at 1:00 PM EDT (6:00 PM UTC) -- months 1-5
-  workflow_dispatch:      # Allows manual triggering
+  workflow_run:
+    workflows: ["Fetch preliminary NHSN HRD dataset"]   # auto-trigger when preliminary data has been fetched succesfully
+    types:
+      - completed
+  workflow_dispatch:  # allows manual trigger from Actions tab
 
 permissions:
   contents: write         # Grants permission to push changes
@@ -34,17 +27,17 @@ jobs:
           environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
           auto-activate-base: false
 
-      - name: Run data collection script
+      - name: Run backfill script
         shell: bash
         run: |
-          python data/conversion/cases/fetch-format_NHSN-HRD-data.py --preliminary True
+          python data/conversion/cases/backfill_preliminary-NHSN-HRD-data.py
 
       - name: Commit changes to a new feature branch
         shell: bash
         run: |
 
           # generate timestamped branch name and store as environmental variable
-          BRANCH_NAME="preliminary-data-update-$(date +'%Y%m%d%H%M%S')"
+          BRANCH_NAME="preliminary-data-backfill-$(date +'%Y%m%d%H%M%S')"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
           # configure git
@@ -54,7 +47,7 @@ jobs:
           
           # stage ONLY the data file
           git add -A
-          git commit -m "NHSN HRD preliminary data update on $(date +'%Y-%m-%d %H:%M:%S')"
+          git commit -m "NHSN HRD preliminary data backfilled on $(date +'%Y-%m-%d %H:%M:%S')"
 
           # Reset all other untracked changes just in case
           git reset --hard  
@@ -67,7 +60,7 @@ jobs:
         shell: bash
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated NHSN HRD Preliminary Data Update" --body "This PR includes the latest update of the preliminary NHSN HRD data."
+          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated NHSN HRD Preliminary Data Backfill" --body "This PR includes the backfill of the preliminary NHSN HRD data."
       
       - name: Merge pull request
         shell: bash

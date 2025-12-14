@@ -1,7 +1,7 @@
 name: Run forecasts
 on:
   workflow_run:
-    workflows: ["Fetch preliminary NHSN HRD dataset"]   # auto-trigger when preliminary data has been fetched succesfully
+    workflows: ["Backfill preliminary NHSN HRD dataset"]   # auto-trigger when preliminary data has been fetched succesfully
     types:
       - completed
   workflow_dispatch:  # allows manual trigger from Actions tab

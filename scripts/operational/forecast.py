@@ -1,5 +1,5 @@
 """
-This script makes the 4-week ahead forecast of the influenza model starting from the most recent NHSN HSN data
+This script makes the 4-week ahead forecast of the influenza model starting from the most recent backfilled preliminary NHSN HSN data
 """
 
 __author__      = "T.W. Alleman"
@@ -57,7 +57,7 @@ fips_mappings = pd.read_csv(os.path.join(os.path.dirname(__file__), '../../data/
 name_state_list = [fips_mappings.loc[fips_mappings['fips_state'] == x]['abbreviation_state'].squeeze() for x in fips_state_list]
 
 # get the latest data (dummy)
-data, _, _, _ = make_data_pySODM_compatible(datetime(2000,1,1), datetime(3000,1,1), 1, preliminary=True)
+data, _, _, _ = make_data_pySODM_compatible(datetime(2000,1,1), datetime(3000,1,1), 1, type='preliminary_backfilled')
 end_date = max(data[0].index)
 
 # helper function
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         theta = list(pd.read_csv(os.path.join(os.path.dirname(__file__),'../../data/interim/calibration/initial_guesses.csv'), index_col=[0,1,2,3,4]).loc[model_name, fips_state, slice(None), slice(None), slice(None)].mean(axis=1))
 
         # format data
-        data, states, log_likelihood_fnc, log_likelihood_fnc_args = make_data_pySODM_compatible(start_simulation, datetime(3000, 1, 1), fips_state, preliminary=True)
+        data, states, log_likelihood_fnc, log_likelihood_fnc_args = make_data_pySODM_compatible(start_simulation, datetime(3000, 1, 1), fips_state, type='preliminary_backfilled')
 
         #################
         ## Setup model ##
