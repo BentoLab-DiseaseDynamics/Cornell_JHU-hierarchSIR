@@ -11,7 +11,7 @@ permissions:
   pull-requests: write    # Grants permission to create PRs
 
 jobs:
-  pull_data:
+  backfill_data:
     runs-on: ubuntu-latest
 
     steps:
