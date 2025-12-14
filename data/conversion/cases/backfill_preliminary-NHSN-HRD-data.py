@@ -25,7 +25,7 @@ abs_dir = os.path.dirname(__file__)
 ########################################
 
 # Find all preliminary .parquet files and read them into a list
-parquet_files = sorted(glob.glob(f"{abs_dir}/*.gzip"))
+parquet_files = sorted(glob.glob(os.path.join(abs_dir, "../../interim/cases/NHSN-HRD_archive/preliminary/*.gzip")))
 dfs = []
 for file in parquet_files:
     df = pd.read_parquet(file)
@@ -156,6 +156,6 @@ latest_df = latest_df.drop(columns=['p_02_mean', 'p_12_mean'])
 
 # Save backfill amounts and data
 parquet_filenames = [os.path.basename(f) for f in parquet_files]
-posterior.to_csv(os.path.join(abs_dir, '../preliminary_backfilled/'+parquet_filenames[-1][:-13]+'_backfill_beta-binomial-estimates.csv'))
-latest_df.to_parquet(os.path.join(abs_dir, '../preliminary_backfilled/'+parquet_filenames[-1]), compression='gzip', index=False)
+posterior.to_csv(os.path.join(abs_dir, '../../interim/cases/NHSN-HRD_archive/preliminary_backfilled/'+parquet_filenames[-1][:-13]+'_backfill_beta-binomial-estimates.csv'))
+latest_df.to_parquet(os.path.join(abs_dir, '../../interim/cases/NHSN-HRD_archive/preliminary_backfilled/'+parquet_filenames[-1]), compression='gzip', index=False)
 
