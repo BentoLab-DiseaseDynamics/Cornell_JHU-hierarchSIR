@@ -11,12 +11,12 @@ permissions:
   pull-requests: write    # Grants permission to create PRs
 
 jobs:
-  pull_data:
+  backfill_data:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
 
@@ -25,15 +25,17 @@ jobs:
         with:
           activate-environment: BENTOLAB-HIERARCHSIR 
           environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
-          auto-activate-base: false
 
       - name: Run backfill script
-        shell: bash
+        shell: bash -l {0}
         run: |
+
+          # needs the '-l {0}' flag to use the initialised conda environment
+
           python data/conversion/cases/backfill_preliminary-NHSN-HRD-data.py
 
       - name: Commit changes to a new feature branch
-        shell: bash
+        shell: bash -l {0}
         run: |
 
           # generate timestamped branch name and store as environmental variable
@@ -57,13 +59,13 @@ jobs:
           git push origin "$BRANCH_NAME"
 
       - name: Create a pull request
-        shell: bash
+        shell: bash -l {0}
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated NHSN HRD Preliminary Data Backfill" --body "This PR includes the backfill of the preliminary NHSN HRD data."
       
       - name: Merge pull request
-        shell: bash
+        shell: bash -l {0}
         run: |
           gh pr merge --delete-branch --squash
 
