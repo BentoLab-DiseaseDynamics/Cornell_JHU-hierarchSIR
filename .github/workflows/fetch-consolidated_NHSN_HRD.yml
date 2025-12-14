@@ -32,10 +32,10 @@ jobs:
         with:
           activate-environment: BENTOLAB-HIERARCHSIR 
           environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
-          auto-activate-base: false
+          auto-activate: false
 
       - name: Run data collection script
-        shell: bash -l {0}
+        shell: bash
         run: |
           python data/conversion/cases/fetch-format_NHSN-HRD-data.py --preliminary False
 
