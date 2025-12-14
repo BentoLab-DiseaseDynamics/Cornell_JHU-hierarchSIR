@@ -43,16 +43,17 @@ for i in range(len(dfs) - 3 + 1):
         if j == 0:
             focal_date = max(df['date'])
         # extract data
-        data.append(df.loc[df['date'] == focal_date][['date', 'name_state', 'influenza admissions']])
+        d = df.loc[df['date'] == focal_date][['date', 'name_state', 'influenza admissions']]
+        # rename data column
+        d = d.rename(columns={'influenza admissions': 'influenza_admissions_0'})
+        data.append(d)
 
     # differentiate and send to one dataframe
     ## pre-allocate output
     abs_backfill = data[0].copy()
-    ## change column name
-    abs_backfill.rename()
     ## fill
     for k in range(len(data)-1):
-        abs_backfill[f'influenza_admissions_{k+1}'] = data[k+1]['influenza admissions']
+        abs_backfill[f'influenza_admissions_{k+1}'] = data[k+1]['influenza_admissions_0']
     abs_backfill_collect.append(abs_backfill)
 
 ###############################################################################
@@ -82,34 +83,79 @@ for i in range(len(dfs) - 3 + 1):
 # Which for alpha = beta = 1 and sum_y0_i >> 1, sum_y2_i >> 1 is simply the ratio of the sum of the backfilled to non-filled cases over the horizon. 
 
 # Beta distribution priors
-alpha = 20
-beta = 1    # E[p_i] = 0.95 (5% missing on release)
+alpha_02 = 20
+beta_02 = 1    # E[p_i] = 0.95 (5% missing on release)
+alpha_12 = 50
+beta_12 = 1    # E[p_i] = 0.95 (5% missing on release)
 
 # Aggregate dounts per state
-sum_df = pd.concat(dfs, ignore_index=True)
+sum_df = pd.concat(abs_backfill_collect, ignore_index=True)
 
 # Aggregate evidence per state
 posterior = (
     sum_df
-    .groupby(state_col, as_index=False)
+    .groupby('name_state', as_index=False)
     .agg(
-        y0_sum=("influenza admissions", "sum"),
+        y0_sum=("influenza_admissions_0", "sum"),
+        y1_sum=("influenza_admissions_1", "sum"),
         y2_sum=("influenza_admissions_2", "sum")
     )
 )
 
-# Compute posterior moments of p
-alpha_post = alpha + posterior["y0_sum"]
-beta_post = beta + (posterior["y2_sum"] - posterior["y0_sum"])
-posterior["p_mean"] = alpha_post / (alpha_post + beta_post)
-posterior["p_median"] = beta_dist.ppf(
+# Compute posterior moments of p (0 --> 2)
+alpha_post = alpha_02 + posterior["y0_sum"]
+beta_post = beta_02 + (posterior["y2_sum"] - posterior["y0_sum"])
+posterior["p_02_mean"] = alpha_post / (alpha_post + beta_post)
+posterior["p_02_median"] = beta_dist.ppf(
     0.5, alpha_post, beta_post
 )
-posterior["p_low_90"] = beta_dist.ppf(
+posterior["p_02_low_90"] = beta_dist.ppf(
     0.05, alpha_post, beta_post
 )
-posterior["p_high_90"] = beta_dist.ppf(
+posterior["p_02_high_90"] = beta_dist.ppf(
     0.95, alpha_post, beta_post
 )
 
-print(posterior.head(50))
+# Compute posterior moments of p (1 --> 2)
+alpha_post = alpha_12 + posterior["y1_sum"]
+beta_post = beta_12 + (posterior["y2_sum"] - posterior["y1_sum"])
+posterior["p_12_mean"] = alpha_post / (alpha_post + beta_post)
+posterior["p_12_median"] = beta_dist.ppf(
+    0.5, alpha_post, beta_post
+)
+posterior["p_12_low_90"] = beta_dist.ppf(
+    0.05, alpha_post, beta_post
+)
+posterior["p_12_high_90"] = beta_dist.ppf(
+    0.95, alpha_post, beta_post
+)
+
+# Cap all cases where p > 1 to p = 1 (assumption that all retracting cases represents errors)
+posterior = posterior.fillna(1)
+
+###############################################
+## Backfill latest preliminary NHSN HRD data ##
+###############################################
+
+# Get the latest dataset and date
+latest_df = dfs[-1]
+latest_date = max(latest_df['date'])
+
+# backfill the most recent week --> shoot forward to two weeks of backfilling total
+latest_df = latest_df.merge(posterior[['name_state', 'p_02_mean', 'p_12_mean']], on='name_state')
+latest_df.loc[latest_df['date'] == latest_date, 'influenza admissions'] *= 1/latest_df.loc[latest_df['date'] == latest_date, 'p_02_mean'].values 
+
+# backfill last week's data --> shoot forward to two weeks of backfilling total
+latest_minus1_date = sorted(latest_df['date'].unique().tolist())[-2]
+latest_df.loc[latest_df['date'] == latest_minus1_date, 'influenza admissions'] *= 1/latest_df.loc[latest_df['date'] == latest_minus1_date, 'p_12_mean'].values 
+
+# remove the p_02_mean and p_12_mean columns
+latest_df = latest_df.drop(columns=['p_02_mean', 'p_12_mean'])
+
+# deliberately chose not to round values --> we use a poisson likelihood function to fit the model which is continuous
+
+# Save backfill amounts and data
+parquet_filenames = [os.path.basename(f) for f in parquet_files]
+posterior.to_csv(os.path.join(abs_dir, '../preliminary_backfilled/'+parquet_filenames[-1][:-13]+'_backfill_beta-binomial-estimates.csv'))
+latest_df.to_parquet(os.path.join(abs_dir, '../preliminary_backfilled/'+parquet_filenames[-1]), compression='gzip', index=False)
+
