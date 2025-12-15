@@ -25,7 +25,7 @@ abs_dir = os.path.dirname(__file__)
 ########################################
 
 # Length of rolling backfill window
-N = 8
+N = 6
 
 # Find all preliminary .parquet files and read them into a list
 parquet_files = sorted(glob.glob(os.path.join(abs_dir, "../../interim/cases/NHSN-HRD_archive/preliminary/*.gzip")))
@@ -46,7 +46,7 @@ for i in range(len(dfs) - 3 + 1):
         if j == 0:
             focal_date = max(df['date'])
         # extract data
-        d = df.loc[df['date'] == focal_date][['date', 'name_state', 'influenza admissions']]
+        d = df.loc[df['date'] == focal_date][['date', 'name_state', 'fips_state', 'influenza admissions']]
         # rename data column
         d = d.rename(columns={'influenza admissions': 'influenza_admissions_0'})
         data.append(d)
@@ -111,11 +111,11 @@ posterior["p_02_mean"] = alpha_post / (alpha_post + beta_post)
 posterior["p_02_median"] = beta_dist.ppf(
     0.5, alpha_post, beta_post
 )
-posterior["p_02_low_90"] = beta_dist.ppf(
-    0.05, alpha_post, beta_post
+posterior["p_02_low_95"] = beta_dist.ppf(
+    0.025, alpha_post, beta_post
 )
-posterior["p_02_high_90"] = beta_dist.ppf(
-    0.95, alpha_post, beta_post
+posterior["p_02_high_95"] = beta_dist.ppf(
+    0.975, alpha_post, beta_post
 )
 
 # Compute posterior moments of p (1 --> 2)
@@ -125,11 +125,11 @@ posterior["p_12_mean"] = alpha_post / (alpha_post + beta_post)
 posterior["p_12_median"] = beta_dist.ppf(
     0.5, alpha_post, beta_post
 )
-posterior["p_12_low_90"] = beta_dist.ppf(
-    0.05, alpha_post, beta_post
+posterior["p_12_low_95"] = beta_dist.ppf(
+    0.025, alpha_post, beta_post
 )
-posterior["p_12_high_90"] = beta_dist.ppf(
-    0.95, alpha_post, beta_post
+posterior["p_12_high_95"] = beta_dist.ppf(
+    0.975, alpha_post, beta_post
 )
 
 # Cap all cases where p > 1 to p = 1 (assumption that all retraction of cases represents an error)
@@ -157,8 +157,19 @@ latest_df = latest_df.drop(columns=['p_02_mean', 'p_12_mean'])
 
 # deliberately chose not to round values --> we use a poisson likelihood function to fit the model which is continuous
 
+# put fips_state back in and sort
+posterior = posterior.merge(abs_backfill_collect[-1][['fips_state', 'name_state']], on='name_state')
+posterior = posterior.sort_values(by='fips_state')
+
+# add in first and last date used in sliding window
+posterior['start_backfill_window'] = sum_df['date'].unique()[0]
+posterior['end_backfill_window'] = sum_df['date'].unique()[-1]
+
+# slice out relevant columns
+posterior = posterior[['fips_state', 'name_state', 'start_backfill_window', 'end_backfill_window', 'p_02_mean', 'p_12_mean', 'p_02_median', 'p_12_median', 'p_02_low_95', 'p_12_low_95', 'p_12_high_95', 'p_12_high_95']]
+
 # Save beta-binomial estimates and the data
 parquet_filenames = [os.path.basename(f) for f in parquet_files]
-posterior.to_csv(os.path.join(abs_dir, '../../interim/cases/NHSN-HRD_archive/preliminary_backfilled/'+parquet_filenames[-1][:-13]+'_backfill_beta-binomial-estimates.csv'))
+posterior.to_csv(os.path.join(abs_dir, '../../interim/cases/NHSN-HRD_archive/preliminary_backfilled/'+parquet_filenames[-1][:-13]+'_backfill_beta-binomial-estimates.csv'), index=False)
 latest_df.to_parquet(os.path.join(abs_dir, '../../interim/cases/NHSN-HRD_archive/preliminary_backfilled/'+parquet_filenames[-1]), compression='gzip', index=False)
 
