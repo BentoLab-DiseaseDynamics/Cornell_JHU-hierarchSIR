@@ -91,6 +91,9 @@ def format_raw_HRD_data(raw_HRD_data: pd.DataFrame) -> pd.DataFrame:
     # Retain only relevant columns
     data = raw_HRD_data[['Week Ending Date', 'Geographic aggregation', 'Total COVID-19 Admissions', 'Total Influenza Admissions', 'Total RSV Admissions']]
 
+    # Otherwise stupid SettingWithCopyWarning
+    data = data.copy()
+
     # Get fips mappings
     fips_mappings = pd.read_csv(os.path.join(abs_dir, '../../interim/demography/demography.csv'), dtype={'fips_state': str})
 
