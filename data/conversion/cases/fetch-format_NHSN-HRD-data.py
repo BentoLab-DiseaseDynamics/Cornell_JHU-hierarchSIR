@@ -91,13 +91,16 @@ def format_raw_HRD_data(raw_HRD_data: pd.DataFrame) -> pd.DataFrame:
     # Retain only relevant columns
     data = raw_HRD_data[['Week Ending Date', 'Geographic aggregation', 'Total COVID-19 Admissions', 'Total Influenza Admissions', 'Total RSV Admissions']]
 
+    # Otherwise stupid SettingWithCopyWarning
+    data = data.copy()
+
     # Get fips mappings
     fips_mappings = pd.read_csv(os.path.join(abs_dir, '../../interim/demography/demography.csv'), dtype={'fips_state': str})
 
     # Add state FIPS code to dataframe
     state_fips_mapping = fips_mappings[["abbreviation_state", "fips_state"]].drop_duplicates()              # get abbreviation / fips
     mapping_dict = dict(zip(state_fips_mapping["abbreviation_state"], state_fips_mapping["fips_state"]))    # build map
-    data["fips_state"] = data["Geographic aggregation"].map(mapping_dict)                                   # append fips codes
+    data.loc[:, "fips_state"] = data["Geographic aggregation"].map(mapping_dict)                            # append fips codes
     data = data.rename(columns={'Geographic aggregation': 'name_state'})                                    # give better names
     data = data[data['name_state'].isin(state_fips_mapping['abbreviation_state'])]                          # retain only continental US, Alaska, Hawaii and Puerto Rico
     
@@ -126,9 +129,12 @@ def save_interim_data(interim_data: pd.DataFrame, save_data_path: str) -> None:
     Save a compressed copy of the interim NHSN HRD dataset
     """
 
-    # Determine year + MMWR of last available datapoint
-    endyear = interim_data['year'].unique().max()
-    endMMWR = interim_data[interim_data['year'] == endyear]['MMWR'].unique().max()
+    # Determine the CDC FluSight reference date 
+    reference_date = max(interim_data['date']) + timedelta(weeks=1)
+
+    # Verify it's a Saturday (it should be)
+    if not reference_date.dayofweek == 5:
+        raise ValueError("last date found in NHSN HRD dataset was not a Saturday.")
 
     # Save a copy in the data/interim/cases/collection/NHSN-HRD_archive
     ## Make folder
@@ -136,7 +142,7 @@ def save_interim_data(interim_data: pd.DataFrame, save_data_path: str) -> None:
     if not os.path.exists(desired_path):
         os.makedirs(desired_path)
     ## Dump a copy of the raw data
-    interim_data.to_parquet(os.path.join(desired_path,f'NHSN-HRD_ending-{endyear}{endMMWR}_gathered-{collection_datetime_str}.parquet.gzip'), compression='gzip', index=False)
+    interim_data.to_parquet(os.path.join(desired_path,f'NHSN-HRD_reference-date-{reference_date:%Y-%m-%d}_gathered-{collection_datetime_str}.parquet.gzip'), compression='gzip', index=False)
     pass
 
 
