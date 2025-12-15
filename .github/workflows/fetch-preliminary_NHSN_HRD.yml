@@ -9,8 +9,7 @@ on:
 # |  |  |  |  |
 # *  *  *  *  *  command to be executed
   schedule:
-    - cron: '0 18 * 10-12 3' # Runs every Wednesday at 1:00 PM EDT (6:00 PM UTC) -- months 10-12
-    - cron: '0 18 * 1-5 3' # Runs every Wednesday at 1:00 PM EDT (6:00 PM UTC) -- months 1-5
+    - cron: '0 18 * * 3' # Runs every Wednesday at 1:00 PM EDT (6:00 PM UTC)
   workflow_dispatch:      # Allows manual triggering
 
 permissions:
