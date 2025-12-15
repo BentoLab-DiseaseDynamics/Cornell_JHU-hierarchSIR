@@ -97,7 +97,7 @@ def format_raw_HRD_data(raw_HRD_data: pd.DataFrame) -> pd.DataFrame:
     # Add state FIPS code to dataframe
     state_fips_mapping = fips_mappings[["abbreviation_state", "fips_state"]].drop_duplicates()              # get abbreviation / fips
     mapping_dict = dict(zip(state_fips_mapping["abbreviation_state"], state_fips_mapping["fips_state"]))    # build map
-    data["fips_state"] = data["Geographic aggregation"].map(mapping_dict)                                   # append fips codes
+    data.loc[:, "fips_state"] = data["Geographic aggregation"].map(mapping_dict)                            # append fips codes
     data = data.rename(columns={'Geographic aggregation': 'name_state'})                                    # give better names
     data = data[data['name_state'].isin(state_fips_mapping['abbreviation_state'])]                          # retain only continental US, Alaska, Hawaii and Puerto Rico
     
