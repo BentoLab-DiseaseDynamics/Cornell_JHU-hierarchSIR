@@ -24,6 +24,9 @@ abs_dir = os.path.dirname(__file__)
 ## Retrieve preliminary NHSN HRD data ##
 ########################################
 
+# Length of rolling backfill window
+N = 8
+
 # Find all preliminary .parquet files and read them into a list
 parquet_files = sorted(glob.glob(os.path.join(abs_dir, "../../interim/cases/NHSN-HRD_archive/preliminary/*.gzip")))
 dfs = []
@@ -88,7 +91,7 @@ alpha_12 = 50
 beta_12 = 1    # E[p_i] = 0.95 (5% missing on release)
 
 # Aggregate dounts per state
-sum_df = pd.concat(abs_backfill_collect, ignore_index=True)
+sum_df = pd.concat(abs_backfill_collect[-N:], ignore_index=True)
 
 # Aggregate evidence per state
 posterior = (
@@ -130,7 +133,8 @@ posterior["p_12_high_90"] = beta_dist.ppf(
 )
 
 # Cap all cases where p > 1 to p = 1 (assumption that all retraction of cases represents an error)
-posterior = posterior.fillna(1)
+posterior["p_02_mean"] = posterior["p_02_mean"].clip(upper=1)
+posterior["p_12_mean"] = posterior["p_12_mean"].clip(upper=1)
 
 ###############################################
 ## Backfill latest preliminary NHSN HRD data ##
