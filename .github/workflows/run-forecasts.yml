@@ -11,81 +11,105 @@ permissions:
   pull-requests: write    # Allows creating and merging PRs
 
 jobs:
-
   deploy:
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: self-hosted
 
     steps:
-    - uses: actions/checkout@v5
+      - name: Check if in season
+        shell: bash
+        run: |
+          MONTH=$(date -u +%m)   # UTC month
+          DAY=$(date -u +%d)
+          echo "Month is $MONTH, day is $DAY"
 
-    - name: Download and set up Python 3.12
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.12'
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "in_season=true" >> $GITHUB_ENV
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_run" ]]; then
+            if [[ $MONTH -ge 10 || $MONTH -lt 6 ]]; then
+              echo "in_season=true" >> $GITHUB_ENV
+            else
+              echo "in_season=false" >> $GITHUB_ENV
+            fi
+          else
+            echo "in_season=false" >> $GITHUB_ENV
+          fi
 
-    - name: Download and set up the BENTOLAB-HIERARCHSIR anaconda environment
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        activate-environment: BENTOLAB-HIERARCHSIR
-        environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml
+      - name: Abort if not in season
+        if: env.in_season != 'true'
+        run: |
+          echo "Not in Oct 1 – Jun 1 season. Skipping deployment."
+          exit 0
 
-    - name: Install Boost Libraries and compiler toolchain
-      shell: bash -l {0}
-      run: |
-        sudo apt-get update && sudo apt-get install -y build-essential libboost-all-dev
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-    - name: Install model in the BENTOLAB-HIERARCHSIR anaconda environment
-      shell: bash -l {0}
-      run: |
-        conda activate BENTOLAB-HIERARCHSIR
-        python -m pip install --upgrade pip
-        pip install -e . --force-reinstall
+      - name: Download and set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
 
-    - name: Compute forecasts 
-      shell: bash -l {0}
-      run: |
-        conda activate BENTOLAB-HIERARCHSIR
-        python scripts/operational/forecast.py
-    
-    - name: Visualise forecasts on US map
-      shell: bash -l {0}
-      run: |
-        conda activate BENTOLAB-HIERARCHSIR
-        python scripts/operational/visualise-forecast.py
+      - name: Download and set up the BENTOLAB-HIERARCHSIR anaconda environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: BENTOLAB-HIERARCHSIR
+          environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml
 
-    - name: Commit changes to a new feature branch
-      shell: bash -l {0}
-      run: |
+      - name: Install Boost Libraries and compiler toolchain
+        shell: bash -l {0}
+        run: |
+          sudo apt-get update && sudo apt-get install -y build-essential libboost-all-dev
 
-        # generate timestamped branch name and store as environmental variable
-        BRANCH_NAME="forecast-$(date +'%Y%m%d%H%M%S')"
-        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+      - name: Install model in the BENTOLAB-HIERARCHSIR anaconda environment
+        shell: bash -l {0}
+        run: |
+          conda activate BENTOLAB-HIERARCHSIR
+          python -m pip install --upgrade pip
+          pip install -e . --force-reinstall
 
-        # configure git
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git checkout -b "$BRANCH_NAME"
-        
-        # stage ONLY the data file
-        git add -A
-        git commit -m "forecast made on $(date +'%Y-%m-%d %H:%M:%S')"
+      - name: Compute forecasts 
+        shell: bash -l {0}
+        run: |
+          conda activate BENTOLAB-HIERARCHSIR
+          python scripts/operational/forecast.py
+      
+      - name: Visualise forecasts on US map
+        shell: bash -l {0}
+        run: |
+          conda activate BENTOLAB-HIERARCHSIR
+          python scripts/operational/visualise-forecast.py
 
-        # Reset all other untracked changes just in case
-        git reset --hard  
-        git clean -fd    
+      - name: Commit changes to a new feature branch
+        shell: bash -l {0}
+        run: |
 
-        # push changes
-        git push origin "$BRANCH_NAME"
+          # generate timestamped branch name and store as environmental variable
+          BRANCH_NAME="forecast-$(date +'%Y%m%d%H%M%S')"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
-    - name: Create a pull request
-      shell: bash -l {0}
-      run: |
-        sudo apt install gh
-        echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-        gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated CDC FluSight Forecast Update" --body "This PR includes the latest update of the CDC FluSight forecast."  
-    
-    - name: Merge pull request
-      shell: bash -l {0}
-      run: |
-        gh pr merge --delete-branch --squash
+          # configure git
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH_NAME"
+          
+          # stage ONLY the data file
+          git add -A
+          git commit -m "forecast made on $(date +'%Y-%m-%d %H:%M:%S')"
+
+          # Reset all other untracked changes just in case
+          git reset --hard  
+          git clean -fd    
+
+          # push changes
+          git push origin "$BRANCH_NAME"
+
+      - name: Create a pull request
+        shell: bash -l {0}
+        run: |
+          sudo apt install gh
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated CDC FluSight Forecast Update" --body "This PR includes the latest update of the CDC FluSight forecast."  
+      
+      - name: Merge pull request
+        shell: bash -l {0}
+        run: |
+          gh pr merge --delete-branch --squash
