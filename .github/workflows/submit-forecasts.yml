@@ -82,7 +82,7 @@ jobs:
           # Create branch using reference date
           BRANCH="forecast-${{ env.REFERENCE_DATE }}"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-          git checkout -b "$BRANCH"
+          git checkout -B "$BRANCH"
           
           # Stage the new forecast file
           git add model-output/Cornell_JHU-hierarchSIR/$(basename "${{ env.LATEST_FILE }}")
