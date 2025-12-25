@@ -16,7 +16,7 @@ from datetime import timedelta
 from datetime import datetime as datetime
 # pySODM functions
 from pySODM.optimization import nelder_mead
-from pySODM.optimization.utils import assign_theta, add_poisson_noise
+from pySODM.optimization.utils import assign_theta, add_negative_binomial_noise
 from pySODM.optimization.objective_functions import log_posterior_probability
 from pySODM.optimization.mcmc import perturbate_theta, run_EnsembleSampler
 # hierarchSIR functions
@@ -222,9 +222,9 @@ if __name__ == '__main__':
         
         # Add sampling noise
         try:
-            simout = add_poisson_noise(simout+0.01)
+            simout = add_negative_binomial_noise(simout+0.01, 0.01) # motivation for choosing 0.01 --> Does not increase noise much for most states, but relaxes "overconfident" forecasts a bit improving WIS
         except:
-            print('no poisson resampling performed')
+            print('no negative binomial resampling performed')
             sys.stdout.flush()
             pass
 
