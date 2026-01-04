@@ -47,11 +47,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Download and set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
       - name: Download and set up the BENTOLAB-HIERARCHSIR anaconda environment
         uses: conda-incubator/setup-miniconda@v3
         with:
