@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hierarchSIR"
 version = "0.0"
-description = "A multi-strain SIR seasonal influenza model"
+description = "An SIR Bayesian hierarchical influenza model"
 authors = [{name = "Dr. Tijs W. Alleman", email = "twa27@cornell.edu"}]
 license = "CC-BY-NC-SA-4.0"
 license-files = ["LICENSE-CC-BY-NC-SA.txt"]
