@@ -11,7 +11,11 @@ permissions:
   pull-requests: write    # Allows creating and merging PRs
 
 jobs:
-  deploy:
+
+  deploy_forecasts:
+
+    # Prevents automatic triggering after failed previous workflow
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: self-hosted
 
     steps:
