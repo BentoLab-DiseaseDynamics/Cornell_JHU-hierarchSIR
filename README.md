@@ -1,6 +1,6 @@
 # Cornell_JHU-hierarchSIR
 
-A hybrid multi-strain SIR - Bayesian hierarchical discrepancy model for infectious disease forecasting.
+A hybrid SIR - Bayesian hierarchical discrepancy model for infectious disease forecasting.
 
 ## Installation (local)
 
@@ -12,20 +12,20 @@ Note: Will not work on Windows because the OS-dependent path to the C++ Boost li
 
 Update conda to make sure your version is up-to-date,
 
-    ```bash
+    ```
     conda update conda
     ```
 
 Setup/update the `environment`: All dependencies needed to run the scripts are collected in the conda `hierarchSIR_env.yml` file. To set up the environment,
 
-    ```bash
+    ```
     conda env create -f BENTOLAB-HIERARCHSIR_conda-env.yml
     conda activate HBENTOLAB-HIERARCHSIR
     ```
 
 or alternatively, to update the environment (needed after adding a dependency),
 
-    ```bash
+    ```
     conda activate BENTOLAB-HIERARCHSIR
     conda env update -f BENTOLAB-HIERARCHSIR_conda-env.yml --prune
     ```
@@ -34,13 +34,13 @@ or alternatively, to update the environment (needed after adding a dependency),
 
 Install the C++ Boost libraries needed to integrate the multi-strain SIR model, for Linux users,
 
-    ```bash
+    ```
     sudo apt-get update && sudo apt-get install -y libboost-all-dev
     ```
 
 Mac users **must** install Boost through Homebrew,
 
-    ```bash
+    ```
     brew install boost
     ```
 
@@ -50,7 +50,7 @@ Note: Boost is a C++ library and is not installed "inside" the conda environment
 
 Install the `hierarchSIR` Python package inside the conda environment using,
 
-    ```bash
+    ```
     conda activate BENTOLAB-HIERARCHSIR
     pip install -e . --force-reinstall
     ```
@@ -66,26 +66,26 @@ The following procedure is performed on a state-by-state basis (for loop over st
 
 1. Activate the conda environment
 
-    ```bash
+    ```
     conda activate BENTOLAB-HIERARCHSIR 
     cd ~/scripts/operational/
     ```
 
 2. Starting from an initial guess, optimize the hierarchSIR parameters for every training season.
 
-    ```bash
+    ```
     python optimize-initial_guesses.py
     ```
 
 3. Convert the optimized model parameters per training season into an initial guess of the across-season hyperdistributions of these parameters.
 
-    ```bash
+    ```
     python prepare-hyperparameters.py
     ```
 
 3. Train the model to find the across-season hyperdistributions of the parameters.
 
-    ```bash
+    ```
     python hierarchical_training.py
     ```
 
@@ -93,7 +93,7 @@ The following procedure is performed on a state-by-state basis (for loop over st
 
 1. Use the across-season hyperdistributions as priors to forecast 4-weeks ahead during the current season.
     
-    ```bash
+    ```
     python forecast.py
     ```
 
