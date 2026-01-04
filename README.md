@@ -20,7 +20,7 @@ Setup/update the `environment`: All dependencies needed to run the scripts are c
 
 ```
 conda env create -f BENTOLAB-HIERARCHSIR_conda-env.yml
-conda activate HBENTOLAB-HIERARCHSIR
+conda activate BENTOLAB-HIERARCHSIR
 ```
 
 or alternatively, to update the environment (needed after adding a dependency),
@@ -105,7 +105,7 @@ See `JHU-ROCKFISH_README.md`.
 
 ### Updating the locked environment
 
-The environment in `BENTOLAB-HIERARCHSIR_conda-env.yml` is an "intented environment" with minimal fixed dependency versions. The environment located in `environment.lock.yml` is a "locked environment" where a version is specified for every packaged used by the code. During the forecasting season, it is best to keep the versions of all dependencies locked to avoid failures due to deprecated or updated features. All automated workflows activate the environment in `environment.lock.yml`.
+The environment in `BENTOLAB-HIERARCHSIR_conda-env.yml` is an "intented environment" with minimal fixed dependency versions. The environment located in `conda-lock.yml` is a "locked environment" where a version is specified for every packaged used by the code. During the forecasting season, it is best to keep the versions of all dependencies locked to avoid failures due to deprecated or updated features. All automated workflows activate the environment in `conda-lock.yml`.
 
 Before starting the forecasting challenge:
 
@@ -118,10 +118,10 @@ conda env update -f BENTOLAB-HIERARCHSIR_conda-env.yml --prune
 
 2. Verify all scripts run with the latest versions of dependencies.
 
-3. Regenerate the locked environment.
+3. Regenerate the locked environment (for linux-64) using the `conda-lock` package.
 
 ```
-conda env export --name BENTOLAB-HIERARCHSIR --no-builds > environment.lock.yml
+conda-lock -f BENTOLAB-HIERARCHSIR_conda-env.yml -p linux-64
 ```
 
 ### Updating the tokens needed to automatically make GH pull requests

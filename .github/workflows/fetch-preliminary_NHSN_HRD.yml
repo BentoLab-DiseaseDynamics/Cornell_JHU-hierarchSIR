@@ -31,7 +31,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: BENTOLAB-HIERARCHSIR 
-          environment-file: environment.lock.yml  
+          environment-file: conda-lock.yml  
 
       - name: Run data collection script
         shell: bash -l {0}
