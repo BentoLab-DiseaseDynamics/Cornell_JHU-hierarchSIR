@@ -15,16 +15,18 @@ jobs:
       with:
         python-version: '3.14'
 
-    - name: Set up conda environment
-      uses: conda-incubator/setup-miniconda@v3
-      with:
-        activate-environment: BENTOLAB-HIERARCHSIR
-        environment-file: conda-lock.yml
+    - name: Install conda-lock
+      run: 
+
+    - name: Activate locked anaconda environment
+      run: |
+        conda install -c conda-forge conda-lock
+        conda-lock install --name BENTOLAB-HIERARCHSIR --file conda-lock.yml --platform linux-64
+        conda activate BENTOLAB-HIERARCHSIR
 
     - name: Install Boost Libraries
       shell: bash -l {0}
       run: |
-        conda activate BENTOLAB-HIERARCHSIR
         sudo apt-get update && sudo apt-get install -y libboost-all-dev
 
     - name: Install model code in BENTOLAB-HIERARCHSIR 
