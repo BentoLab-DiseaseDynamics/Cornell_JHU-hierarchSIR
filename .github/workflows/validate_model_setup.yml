@@ -1,14 +1,14 @@
-name: Run unit tests
+name: Validate model setup
 
 on: [pull_request]
 jobs:
-  deploy:
+  validate_model_setup:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: ['ubuntu-latest',]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v6
@@ -27,15 +27,9 @@ jobs:
         conda activate BENTOLAB-HIERARCHSIR
         sudo apt-get update && sudo apt-get install -y libboost-all-dev
 
-    - name: Install BENTOLAB-HIERARCHSIR 
+    - name: Install model code in BENTOLAB-HIERARCHSIR 
       shell: bash -l {0}
       run: |
         conda activate BENTOLAB-HIERARCHSIR
         python -m pip install --upgrade pip
         pip install -e . --force-reinstall
-
-    # - name: Run unit test
-    #   shell: bash -l {0}
-    #   run: |
-    #     conda activate BENTOLAB-HIERARCHSIR
-    #     pytest src/tests/test_lpp.py
