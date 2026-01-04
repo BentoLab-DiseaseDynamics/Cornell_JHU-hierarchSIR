@@ -12,37 +12,37 @@ Note: Will not work on Windows because the OS-dependent path to the C++ Boost li
 
 Update conda to make sure your version is up-to-date,
 
-    ```
-    conda update conda
-    ```
+```
+conda update conda
+```
 
 Setup/update the `environment`: All dependencies needed to run the scripts are collected in the conda `hierarchSIR_env.yml` file. To set up the environment,
 
-    ```
-    conda env create -f BENTOLAB-HIERARCHSIR_conda-env.yml
-    conda activate HBENTOLAB-HIERARCHSIR
-    ```
+```
+conda env create -f BENTOLAB-HIERARCHSIR_conda-env.yml
+conda activate HBENTOLAB-HIERARCHSIR
+```
 
 or alternatively, to update the environment (needed after adding a dependency),
 
-    ```
-    conda activate BENTOLAB-HIERARCHSIR
-    conda env update -f BENTOLAB-HIERARCHSIR_conda-env.yml --prune
-    ```
+```
+conda activate BENTOLAB-HIERARCHSIR
+conda env update -f BENTOLAB-HIERARCHSIR_conda-env.yml --prune
+```
 
 ### Install the Boost libraries 
 
 Install the C++ Boost libraries needed to integrate the multi-strain SIR model, for Linux users,
 
-    ```
-    sudo apt-get update && sudo apt-get install -y libboost-all-dev
-    ```
+```
+sudo apt-get update && sudo apt-get install -y libboost-all-dev
+```
 
 Mac users **must** install Boost through Homebrew,
 
-    ```
-    brew install boost
-    ```
+```
+brew install boost
+```
 
 Note: Boost is a C++ library and is not installed "inside" the conda environment but rather on your local machine. In `setup.py` the software is pointed to the location of the Boost library.
 
@@ -50,10 +50,10 @@ Note: Boost is a C++ library and is not installed "inside" the conda environment
 
 Install the `hierarchSIR` Python package inside the conda environment using,
 
-    ```
-    conda activate BENTOLAB-HIERARCHSIR
-    pip install -e . --force-reinstall
-    ```
+```
+conda activate BENTOLAB-HIERARCHSIR
+pip install -e . --force-reinstall
+```
 
 Note: The installation script requires the use of `pybind11` to "bind" the multi-strain SIR model in C++ to a Python function. This is the purpose of `pyproject.toml`.
 Note: If you make any changes to the C++ files you need to reinstall `hierarchSIR`.
