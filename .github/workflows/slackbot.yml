@@ -20,11 +20,6 @@ jobs:
         with:
           ref: main
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.14'
-
       - name: Set up conda environment
         uses: conda-incubator/setup-miniconda@v3
         with:
