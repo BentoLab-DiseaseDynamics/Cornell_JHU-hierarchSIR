@@ -56,7 +56,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: BENTOLAB-HIERARCHSIR
-          environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml
+          environment-file: environment.lock.yml
 
       - name: Install Boost Libraries and compiler toolchain
         shell: bash -l {0}
