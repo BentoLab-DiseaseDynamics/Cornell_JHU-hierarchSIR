@@ -62,7 +62,6 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate BENTOLAB-HIERARCHSIR
-          export LD_LIBRARY_PATH="$CONDA_PREFIX/lib"
           python -m pip install --upgrade pip
           pip install -e . --force-reinstall
 
@@ -70,14 +69,12 @@ jobs:
         shell: bash -l {0}
         run: |
           conda activate BENTOLAB-HIERARCHSIR
-          export LD_LIBRARY_PATH="$CONDA_PREFIX/lib"
           python scripts/operational/forecast.py
       
       - name: Visualise forecasts on US map
         shell: bash -l {0}
         run: |
           conda activate BENTOLAB-HIERARCHSIR
-          export LD_LIBRARY_PATH="$CONDA_PREFIX/lib"
           python scripts/operational/visualise-forecast.py
 
       - name: Commit changes to a new feature branch
