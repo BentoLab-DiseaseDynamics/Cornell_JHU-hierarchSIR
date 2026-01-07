@@ -16,3 +16,4 @@ dependencies:
   - fastparquet
   - geopandas
   - slack_sdk
+  - fiona
