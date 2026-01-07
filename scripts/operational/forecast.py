@@ -39,15 +39,15 @@ start_calibration_month = 9
 
 # optimization parameters
 ## frequentist optimization
-n_nm = 1000                                                     # Number of NM search iterations
+n_nm = 200                                                     # Number of NM search iterations
 ## bayesian inference
-n_mcmc = 1500                                                   # Number of MCMC iterations
+n_mcmc = 150                                                   # Number of MCMC iterations
 multiplier_mcmc = 3                                             # Total number of Markov chains = number of parameters * multiplier_mcmc
-print_n = 1500                                                  # Print diagnostics every `print_n`` iterations
-discard = 1250                                                  # Discard first `discard` iterations as burn-in
-thin = 10                                                      # Thinning factor emcee chains
+print_n = 150                                                  # Print diagnostics every `print_n`` iterations
+discard = 125                                                  # Discard first `discard` iterations as burn-in
+thin = 1                                                      # Thinning factor emcee chains
 processes = int(os.environ.get('NUM_CORES', mp.cpu_count()))    # Number of CPUs to use
-n = 1000                                                        # Number of simulations performed in MCMC goodness-of-fit figure
+n = 100                                                        # Number of simulations performed in MCMC goodness-of-fit figure
 
 # figure out what states to loop over
 initial_guesses = pd.read_csv(os.path.join(os.path.dirname(__file__), '../../data/interim/calibration/initial_guesses.csv'), index_col=[0,1,2,3,4])
