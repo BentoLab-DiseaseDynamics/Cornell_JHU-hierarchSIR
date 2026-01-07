@@ -87,7 +87,7 @@ name_state_list = [fips_mappings.loc[fips_mappings['fips_state'] == x]['abbrevia
 forecast["target_end_date"] = pd.to_datetime(forecast["target_end_date"])
 
 # get the shapefiles
-gdf = gpd.read_file(os.path.join(os.path.dirname(__file__),f'../../data/raw/geography/cb_2018_us_state_20m/cb_2018_us_state_20m.shp'))
+gdf = gpd.read_file(os.path.join(os.path.dirname(__file__),f'../../data/raw/geography/cb_2018_us_state_20m/cb_2018_us_state_20m.shp'), engine='fiona')
 gdf["representative_point"] = gdf.geometry.representative_point()
 gdf["centroid"] = gdf.geometry.representative_point()
 gdf["STATEFP"] = gdf["STATEFP"].astype(int)
