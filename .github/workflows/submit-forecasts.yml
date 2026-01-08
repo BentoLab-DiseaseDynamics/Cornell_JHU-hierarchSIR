@@ -1,7 +1,7 @@
 name: Submit forecasts
 on:
   workflow_run:
-    workflows: ["Post results in Bento Lab Slack"]   # auto-trigger when forecasts have been generated succesfully
+    workflows: ["Run forecasts"]   # auto-trigger when forecasts have been generated succesfully
     types:
       - completed
   workflow_dispatch:  # allows manual trigger from Actions tab
