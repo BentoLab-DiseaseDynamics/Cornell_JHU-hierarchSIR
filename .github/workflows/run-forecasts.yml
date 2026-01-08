@@ -71,12 +71,6 @@ jobs:
           conda activate BENTOLAB-HIERARCHSIR
           python scripts/operational/forecast.py
       
-      - name: Visualise forecasts on US map
-        shell: bash -l {0}
-        run: |
-          conda activate BENTOLAB-HIERARCHSIR
-          python scripts/operational/visualise-forecast.py
-
       - name: Commit changes to a new feature branch
         shell: bash -l {0}
         run: |
