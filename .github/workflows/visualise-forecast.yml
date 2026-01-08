@@ -1,0 +1,83 @@
+name: Visualise forecasts
+on:
+  workflow_run:
+    workflows: ["Submit forecasts"]   # auto-trigger when preliminary data has been fetched succesfully
+    types:
+      - completed
+  workflow_dispatch:  # allows manual trigger from Actions tab
+
+permissions:
+  contents: write         # Grants permission to push changes
+  pull-requests: write    # Grants permission to create PRs
+
+jobs:
+
+  visualise_forecasts:
+    
+    # Prevents automatic triggering after failed previous workflow
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Download and set up the BENTOLAB-HIERARCHSIR anaconda environment
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: BENTOLAB-HIERARCHSIR
+          environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml
+
+      - name: Install Boost Libraries and compiler toolchain
+        shell: bash -l {0}
+        run: |
+          sudo apt-get update && sudo apt-get install -y build-essential libboost-all-dev
+
+      - name: Install model in the BENTOLAB-HIERARCHSIR anaconda environment
+        shell: bash -l {0}
+        run: |
+          conda activate BENTOLAB-HIERARCHSIR
+          python -m pip install --upgrade pip
+          pip install -e . --force-reinstall
+
+      - name: Visualise forecasts on US map
+        shell: bash -l {0}
+        run: |
+          conda activate BENTOLAB-HIERARCHSIR
+          python scripts/operational/visualise-forecast.py
+    
+      - name: Commit changes to a new feature branch
+        shell: bash -l {0}
+        run: |
+
+          # generate timestamped branch name and store as environmental variable
+          BRANCH_NAME="visualise-forecasts-$(date +'%Y%m%d%H%M%S')"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+          # configure git
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH_NAME"
+          
+          # stage ONLY the data file
+          git add -A
+          git commit -m "forecasts visualised on $(date +'%Y-%m-%d %H:%M:%S')"
+
+          # Reset all other untracked changes just in case
+          git reset --hard  
+          git clean -fd    
+
+          # push changes
+          git push origin "$BRANCH_NAME"
+
+      - name: Create a pull request
+        shell: bash -l {0}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated CDC FluSight Forecast Visualisation" --body "This PR includes the visualisation of the most recent CDC FluSight forecast."
+      
+      - name: Merge pull request
+        shell: bash -l {0}
+        run: |
+          gh pr merge --delete-branch --squash
+
