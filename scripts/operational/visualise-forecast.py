@@ -149,7 +149,7 @@ for name_state, fips_state in zip(name_state_list, fips_state_list):
     iax.tick_params(axis='x', labelsize=5, rotation=0)
     iax.tick_params(axis='y', labelsize=5)
     iax.set_xlim([start_date, end_date+timedelta(weeks=5)])
-    iax.set_ylim([-10,200])
+    iax.set_ylim([-10,250])
 
     # put state in
     iax.text(
