@@ -1,7 +1,7 @@
 name: Post results in Bento Lab Slack
 on:
   workflow_run:
-    workflows: ["Run forecasts"]   # auto-trigger when preliminary data has been fetched succesfully
+    workflows: ["Visualise forecasts"]   # auto-trigger when preliminary data has been fetched succesfully
     types:
       - completed
   workflow_dispatch:  # allows manual trigger from Actions tab
