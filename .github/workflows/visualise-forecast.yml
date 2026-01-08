@@ -1,49 +1,24 @@
-name: Run forecasts
+name: Visualise forecasts
 on:
   workflow_run:
-    workflows: ["Backfill preliminary NHSN HRD dataset"]   # auto-trigger when preliminary data has been fetched succesfully
+    workflows: ["Submit forecasts"]   # auto-trigger when preliminary data has been fetched succesfully
     types:
       - completed
   workflow_dispatch:  # allows manual trigger from Actions tab
 
 permissions:
-  contents: write         # Allows pushing commits
-  pull-requests: write    # Allows creating and merging PRs
+  contents: write         # Grants permission to push changes
+  pull-requests: write    # Grants permission to create PRs
 
 jobs:
 
-  deploy_forecasts:
-
+  visualise_forecasts:
+    
     # Prevents automatic triggering after failed previous workflow
     if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Check if in season
-        shell: bash
-        run: |
-          MONTH=$(date -u +%m)   # UTC month
-          DAY=$(date -u +%d)
-          echo "Month is $MONTH, day is $DAY"
-
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
-            echo "in_season=true" >> $GITHUB_ENV
-          elif [[ "$GITHUB_EVENT_NAME" == "workflow_run" ]]; then
-            if [[ $MONTH -ge 10 || $MONTH -lt 6 ]]; then
-              echo "in_season=true" >> $GITHUB_ENV
-            else
-              echo "in_season=false" >> $GITHUB_ENV
-            fi
-          else
-            echo "in_season=false" >> $GITHUB_ENV
-          fi
-
-      - name: Abort if not in season
-        if: env.in_season != 'true'
-        run: |
-          echo "Not in Oct 1 – Jun 1 season. Skipping deployment."
-          exit 0
-
       - name: Checkout repository
         uses: actions/checkout@v5
 
@@ -65,18 +40,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e . --force-reinstall
 
-      - name: Compute forecasts 
+      - name: Visualise forecasts on US map
         shell: bash -l {0}
         run: |
           conda activate BENTOLAB-HIERARCHSIR
-          python scripts/operational/forecast.py
-      
+          python scripts/operational/visualise-forecast.py
+    
       - name: Commit changes to a new feature branch
         shell: bash -l {0}
         run: |
 
           # generate timestamped branch name and store as environmental variable
-          BRANCH_NAME="forecast-$(date +'%Y%m%d%H%M%S')"
+          BRANCH_NAME="visualise-forecasts-$(date +'%Y%m%d%H%M%S')"
           echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
           # configure git
@@ -86,7 +61,7 @@ jobs:
           
           # stage ONLY the data file
           git add -A
-          git commit -m "forecast made on $(date +'%Y-%m-%d %H:%M:%S')"
+          git commit -m "forecasts visualised on $(date +'%Y-%m-%d %H:%M:%S')"
 
           # Reset all other untracked changes just in case
           git reset --hard  
@@ -98,11 +73,11 @@ jobs:
       - name: Create a pull request
         shell: bash -l {0}
         run: |
-          sudo apt install gh
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated CDC FluSight Forecast Update" --body "This PR includes the latest update of the CDC FluSight forecast."  
+          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated CDC FluSight Forecast Visualisation" --body "This PR includes the visualisation of the most recent CDC FluSight forecast."
       
       - name: Merge pull request
         shell: bash -l {0}
         run: |
           gh pr merge --delete-branch --squash
+
