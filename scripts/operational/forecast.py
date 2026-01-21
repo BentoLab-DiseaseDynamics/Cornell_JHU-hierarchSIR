@@ -162,7 +162,7 @@ if __name__ == '__main__':
         #################
 
         # perform optimization 
-        theta, _ = nelder_mead.optimize(lpp, np.array(theta), len(lpp.expanded_bounds)*[0.1,],
+        theta, _ = nelder_mead.optimize(lpp, np.array(theta), len(lpp.expanded_bounds)*[0.2,],
                                         processes=processes, max_iter=n_nm, no_improv_break=1000)
 
         ######################
