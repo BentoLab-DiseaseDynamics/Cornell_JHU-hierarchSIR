@@ -229,7 +229,7 @@ if __name__ == '__main__':
         
         # Add sampling noise
         try:
-            simout = add_negative_binomial_noise(simout+0.01, 0.01) # motivation for choosing 0.01 --> Does not increase noise much for most states, but relaxes "overconfident" forecasts a bit improving WIS
+            simout = add_negative_binomial_noise(simout+0.01, 0.025) # motivation for choosing 0.025 --> First using 0.01 but this was insufficient, overconfidence in too much states and coverage too low.
         except:
             print('no negative binomial resampling performed')
             sys.stdout.flush()
