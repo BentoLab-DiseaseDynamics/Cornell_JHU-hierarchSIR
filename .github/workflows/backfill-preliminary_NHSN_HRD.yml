@@ -35,6 +35,7 @@ jobs:
         run: |
 
           # needs the '-l {0}' flag to use the initialised conda environment
+
           python data/conversion/cases/backfill_preliminary-NHSN-HRD-data.py
 
       - name: Commit changes to a new feature branch
@@ -72,7 +73,3 @@ jobs:
         run: |
           gh pr merge --delete-branch --squash
 
-      - name: Trigger "Run forecasts"
-        shell: bash -l {0}
-        run: |
-          gh workflow run "Run forecasts" --ref main

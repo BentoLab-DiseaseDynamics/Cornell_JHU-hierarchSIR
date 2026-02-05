@@ -1,6 +1,10 @@
 name: Run forecasts
 on:
-  workflow_dispatch:      # allows manual trigger from Actions tab
+  workflow_run:
+    workflows: ["Backfill preliminary NHSN HRD dataset"]   # auto-trigger when preliminary data has been fetched succesfully
+    types:
+      - completed
+  workflow_dispatch:  # allows manual trigger from Actions tab
 
 permissions:
   contents: write         # Allows pushing commits
@@ -10,6 +14,8 @@ jobs:
 
   deploy_forecasts:
 
+    # Prevents automatic triggering after failed previous workflow
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: self-hosted
 
     steps:
