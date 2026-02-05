@@ -17,7 +17,7 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
 
   python data/conversion/cases/fetch-format_NHSN-HRD-data.py --preliminary True
 
-  NEWEST_FILE=$(ls -t "$DATA_DIR"/NHSN-HRD_reference-date-*_gathered-*.parquet | head -n 1)
+  NEWEST_FILE=$(ls -t "$DATA_DIR"/NHSN-HRD_reference-date-*_gathered-*.parquet.gzip | head -n 1)
 
   if [[ -z "$NEWEST_FILE" ]]; then
     echo "::error::No NHSN HRD files found after data fetch"
@@ -30,7 +30,7 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
   REF_DATE=$(basename "$NEWEST_FILE" | sed -E 's/.*reference-date-([0-9]{4}-[0-9]{2}-[0-9]{2})_.*/\1/')
   echo "Extracted reference date: $REF_DATE"
 
-  MATCHING_FILES=$(ls "$DATA_DIR"/NHSN-HRD_reference-date-"$REF_DATE"_gathered-*.parquet 2>/dev/null | wc -l)
+  MATCHING_FILES=$(ls "$DATA_DIR"/NHSN-HRD_reference-date-"$REF_DATE"_gathered-*.parquet.gzip 2>/dev/null | wc -l)
 
   if [[ "$MATCHING_FILES" -eq 1 ]]; then
     echo "New reference date detected — continuing workflow."
