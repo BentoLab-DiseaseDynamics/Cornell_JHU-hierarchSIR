@@ -2,8 +2,8 @@
 set -euo pipefail
 
 DATA_DIR="data/interim/cases/NHSN-HRD_archive/preliminary"
-MAX_RETRIES=6
-WAIT_SECONDS=1800
+MAX_RETRIES="${MAX_RETRIES:-6}" # Use env vars if set, otherwise defaults
+WAIT_SECONDS="${WAIT_SECONDS:-3600}"
 
 echo "Starting NHSN HRD preliminary data fetch"
 echo "Max retries: $MAX_RETRIES"
