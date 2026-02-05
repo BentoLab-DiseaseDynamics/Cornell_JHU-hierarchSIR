@@ -14,6 +14,7 @@ mkdir -p "$DATA_DIR"
 for ((i=1; i<=MAX_RETRIES; i++)); do
   echo "=================================================="
   echo "Attempt $i of $MAX_RETRIES"
+  echo "Downloading data"
 
   python data/conversion/cases/fetch-format_NHSN-HRD-data.py --preliminary True
 
@@ -24,19 +25,23 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
     exit 1
   fi
 
-  echo "Newest file:"
+  echo "Filename:"
   echo "  $NEWEST_FILE"
 
   REF_DATE=$(basename "$NEWEST_FILE" | sed -E 's/.*reference-date-([0-9]{4}-[0-9]{2}-[0-9]{2})_.*/\1/')
-  echo "Extracted reference date: $REF_DATE"
+  echo "Reference date:"
+  echo "  $REF_DATE"
 
   MATCHING_FILES=$(ls "$DATA_DIR"/NHSN-HRD_reference-date-"$REF_DATE"_gathered-*.parquet.gzip 2>/dev/null | wc -l)
+  OTHER_FILES=$((MATCHING_FILES - 1))
 
   if [[ "$MATCHING_FILES" -eq 1 ]]; then
     echo "New reference date detected — continuing workflow."
     exit 0
   else
-    echo "Reference date already exists ($MATCHING_FILES files found). Removing latest downloaded file."
+    echo "Data for reference date already exists ($OTHER_FILES other files were found)."
+    echo "Removing:"
+    echo "  $NEWEST_FILE"
     rm -f "$NEWEST_FILE"
   fi
 
