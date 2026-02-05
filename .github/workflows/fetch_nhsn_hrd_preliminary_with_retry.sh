@@ -40,10 +40,8 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
     rm -f "$NEWEST_FILE"
   fi
 
-  echo "Reference date already exists ($MATCHING_FILES files)."
-
   if [[ "$i" -lt "$MAX_RETRIES" ]]; then
-    echo "Waiting $WAIT_SECONDS seconds before retry..."
+    echo "Waiting $WAIT_SECONDS seconds before retrying..."
     sleep "$WAIT_SECONDS"
   else
     echo "::error::No new NHSN HRD reference date after $MAX_RETRIES attempts"
