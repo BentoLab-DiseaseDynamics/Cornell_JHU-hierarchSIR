@@ -36,7 +36,7 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
     echo "New reference date detected — continuing workflow."
     exit 0
   else
-    echo "Reference date already exists ($MATCHING_FILES files found). Removing latest downloaded file: $NEWEST_FILE"
+    echo "Reference date already exists ($MATCHING_FILES files found). Removing latest downloaded file."
     rm -f "$NEWEST_FILE"
   fi
 
