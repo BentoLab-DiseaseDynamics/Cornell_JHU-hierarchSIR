@@ -33,13 +33,14 @@ jobs:
           activate-environment: BENTOLAB-HIERARCHSIR 
           environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
 
-      - name: Run data collection script
+      - name: Fetch NHSN HRD preliminary data (with retries and sleep)
         shell: bash -l {0}
+        env:
+          MAX_RETRIES: 6
+          WAIT_SECONDS: 1800
         run: |
-
-          # needs the '-l {0}' flag to use the initialised conda environment
-
-          python data/conversion/cases/fetch-format_NHSN-HRD-data.py --preliminary True
+          chmod +x .github/workflows/fetch_nhsn_hrd_preliminary_with_retry.sh
+          ./.github/workflows/fetch_nhsn_hrd_preliminary_with_retry.sh
 
       - name: Commit changes to a new feature branch
         shell: bash -l {0}
