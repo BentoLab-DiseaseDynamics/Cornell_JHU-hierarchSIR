@@ -66,8 +66,9 @@ def get_raw_HRD_data(url: str) -> pd.DataFrame:
 
     Data source: https://healthdata.gov/dataset/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/n3kj-exp9/about_data > Access this data > TEXT/CSV
     """
-    
-    return pd.read_csv(url, index_col=0, parse_dates=True).reset_index()
+    raw_data = pd.read_csv(url, index_col=0, parse_dates=True)
+    raw_data_copy = raw_data.copy()
+    return raw_data_copy.reset_index()
 
 def format_raw_HRD_data(raw_HRD_data: pd.DataFrame) -> pd.DataFrame:
     """
