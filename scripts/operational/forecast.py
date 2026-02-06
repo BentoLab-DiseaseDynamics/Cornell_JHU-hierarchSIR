@@ -123,13 +123,6 @@ if __name__ == '__main__':
         # format data
         data, states, log_likelihood_fnc, log_likelihood_fnc_args = make_data_pySODM_compatible(start_simulation, datetime(3000, 1, 1), fips_state, type='preliminary_backfilled')
 
-        # reformat data to use microseconds
-        # added because interpolation from simulation dates to data dates in the computation of the log posterior probability function of pySODM, which is done with an xarray interp function, no longer happily juggles ns and us
-        # I strongly suggest making sure the xarray simulation output in pySODM enforces [ns]
-        d = data[0]
-        d.index = d.index.astype("datetime64[us]")
-        data[0] = d
-
         #################
         ## Setup model ##
         #################
