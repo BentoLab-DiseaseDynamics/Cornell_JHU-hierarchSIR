@@ -9,7 +9,7 @@ on:
 # |  |  |  |  |
 # *  *  *  *  *  command to be executed
   schedule:
-    - cron: '0 18 * * 3' # Runs every Wednesday at 1:00 PM EDT (6:00 PM UTC)
+    - cron: '0 17 * * 3' 
   workflow_dispatch:      # Allows manual triggering
 
 permissions:
@@ -36,7 +36,7 @@ jobs:
       - name: Fetch NHSN HRD preliminary data (with retries and sleep)
         shell: bash -l {0}
         env:
-          MAX_RETRIES: 6
+          MAX_RETRIES: 7
           WAIT_SECONDS: 1800
         run: |
           chmod +x .github/workflows/fetch_nhsn_hrd_preliminary_with_retry.sh
