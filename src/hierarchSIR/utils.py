@@ -309,7 +309,7 @@ def simout_to_hubverse(simout: xr.Dataset,
     horizon = range(-1,4)
     output_type = 'samples' if not quantiles else 'quantile'
     # derived metadata
-    target_end_date = np.array([reference_date + timedelta(weeks=h) for h in horizon], dtype='datetime64[us]')
+    target_end_date = [reference_date + timedelta(weeks=h) for h in horizon]
 
     # pre-allocate dataframe
     idx = pd.MultiIndex.from_product([[reference_date,], [target,], horizon, location, [output_type,], output_type_id],
