@@ -1,0 +1,37 @@
+name: Forecast pipeline
+
+on:
+  schedule:
+    - cron: '0 17 * * 3'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  fetch_data:
+    uses: ./.github/workflows/fetch-preliminary_NHSN_HRD.yml
+
+  backfill_data:
+    needs: fetch_data
+    uses: ./.github/workflows/backfill-preliminary_NHSN_HRD.yml
+
+  run_forecasts:
+    needs: backfill_data
+    uses: ./.github/workflows/run-forecasts.yml
+  
+  submit_forecasts:
+    needs: run_forecasts
+    uses: ./.github/workflows/submit-forecasts.yml
+    secrets: inherit
+
+  visualise_forecasts:
+    needs: run_forecasts
+    uses: ./.github/workflows/visualise-forecasts.yml
+  
+  slack_post:
+    needs: visualise_forecasts
+    uses: ./.github/workflows/post-visualisations_slack.yml
+    secrets: inherit

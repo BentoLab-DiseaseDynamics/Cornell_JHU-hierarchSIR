@@ -1,10 +1,8 @@
 name: Backfill preliminary NHSN HRD dataset
+
 on:
-  workflow_run:
-    workflows: ["Fetch preliminary NHSN HRD dataset"]   # auto-trigger when preliminary data has been fetched succesfully
-    types:
-      - completed
-  workflow_dispatch:  # allows manual trigger from Actions tab
+  workflow_call:          # As a child process of forecast_pipeline.yml
+  workflow_dispatch:      # Allows manual triggering
 
 permissions:
   contents: write         # Grants permission to push changes
@@ -13,16 +11,12 @@ permissions:
 jobs:
 
   backfill_data:
-    
-    # Prevents automatic triggering after failed previous workflow
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          ref: main
 
       - name: Set up conda environment
         uses: conda-incubator/setup-miniconda@v3
@@ -33,9 +27,7 @@ jobs:
       - name: Run backfill script
         shell: bash -l {0}
         run: |
-
           # needs the '-l {0}' flag to use the initialised conda environment
-
           python data/conversion/cases/backfill_preliminary-NHSN-HRD-data.py
 
       - name: Commit changes to a new feature branch

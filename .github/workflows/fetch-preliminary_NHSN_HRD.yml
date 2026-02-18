@@ -1,15 +1,7 @@
 name: Fetch preliminary NHSN HRD dataset
 
 on:
-# +---------------- minute (0 - 59)
-# |  +------------- hour (0 - 23)
-# |  |  +---------- day of month (1 - 31)
-# |  |  |  +------- month (1 - 12)
-# |  |  |  |  +---- day of week (0 - 6) (Sunday=0 or 7)
-# |  |  |  |  |
-# *  *  *  *  *  command to be executed
-  schedule:
-    - cron: '0 17 * * 3' 
+  workflow_call:          # As a child process of forecast_pipeline.yml
   workflow_dispatch:      # Allows manual triggering
 
 permissions:
@@ -17,15 +9,13 @@ permissions:
   pull-requests: write    # Grants permission to create PRs
 
 jobs:
-
   fetch_data:
+
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-        with:
-          ref: main
 
       - name: Set up conda environment
         uses: conda-incubator/setup-miniconda@v3
