@@ -13,6 +13,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0 # (default: 1 ---> fetches only tip of main from the default origin at workflow start time ---> previous job added a new tip) 
+
+      - name: Pull latest main
+        shell: bash
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Download and set up the BENTOLAB-HIERARCHSIR anaconda environment
         uses: conda-incubator/setup-miniconda@v3

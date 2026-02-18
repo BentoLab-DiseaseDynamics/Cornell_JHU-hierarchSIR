@@ -2,9 +2,6 @@ name: Post results in Bento Lab Slack
 
 on:
   workflow_call:          # As a child process of forecast_pipeline.yml
-    secrets:
-      SLACK_BOT_TOKEN:
-        required: true
   workflow_dispatch:      # Allows manual triggering
 
 jobs:
@@ -15,9 +12,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
+          fetch-depth: 0 # (default: 1 ---> fetches only tip of main from the default origin at workflow start time ---> previous job added a new tip) 
+
+      - name: Pull latest main
+        shell: bash
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Set up conda environment
         uses: conda-incubator/setup-miniconda@v3

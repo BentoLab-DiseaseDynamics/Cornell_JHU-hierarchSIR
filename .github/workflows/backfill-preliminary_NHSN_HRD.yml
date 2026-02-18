@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: main
-          fetch-depth: 0 # (default: 1 ---> fetches only tip of main from the default origin at workflow start time) 
+          fetch-depth: 0 # (default: 1 ---> fetches only tip of main from the default origin at workflow start time ---> previous job added a new tip) 
 
       - name: Pull latest main
         shell: bash
