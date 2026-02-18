@@ -1,21 +1,13 @@
 name: Visualise forecasts
-on:
-  workflow_run:
-    workflows: ["Submit forecasts"]   # auto-trigger when preliminary data has been fetched succesfully
-    types:
-      - completed
-  workflow_dispatch:  # allows manual trigger from Actions tab
 
-permissions:
-  contents: write         # Grants permission to push changes
-  pull-requests: write    # Grants permission to create PRs
+on:
+  workflow_call:          # As a child process of forecast_pipeline.yml
+  workflow_dispatch:      # Allows manual triggering
 
 jobs:
 
   visualise_forecasts:
     
-    # Prevents automatic triggering after failed previous workflow
-    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
 
     steps:
