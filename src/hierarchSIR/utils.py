@@ -343,8 +343,8 @@ def simout_to_hubverse(simout: xr.Dataset,
     df["location"] = df["location"].astype(str).str.zfill(2)
     df.loc[df["location"] == "00", "location"] = "US"
 
-    # Ensure all values in "value" are at least 0 --> prevent rounding errors
-    df["value"] = df["value"].clip(lower=0)
+    # Round to the closest integer and convert to int
+    df["value"] = df["value"].round().astype(int)
 
     # save result
     if path:
