@@ -26,8 +26,8 @@ jobs:
       - name: Fetch NHSN HRD preliminary data (with retries and sleep)
         shell: bash -l {0}
         env:
-          MAX_RETRIES: 7
-          WAIT_SECONDS: 1800
+          MAX_RETRIES: 18
+          WAIT_SECONDS: 900
         run: |
           chmod +x .github/workflows/fetch_nhsn_hrd_preliminary_with_retry.sh
           ./.github/workflows/fetch_nhsn_hrd_preliminary_with_retry.sh
