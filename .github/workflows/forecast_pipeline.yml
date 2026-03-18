@@ -2,7 +2,7 @@ name: Forecast pipeline
 
 on:
   schedule:
-    - cron: '0 17 * * 3'
+    - cron: '0 16 * * 3'
   workflow_dispatch:
 
 permissions:
