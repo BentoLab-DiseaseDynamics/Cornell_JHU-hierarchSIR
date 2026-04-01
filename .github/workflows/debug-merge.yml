@@ -1,0 +1,76 @@
+name: Debug merging
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  test_run:
+
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Pull latest main
+        shell: bash
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
+      - name: Generate dummy forecast file
+        shell: bash
+        run: |
+          echo "This is a test forecast file generated at $(date)" > test_forecast.txt
+
+      - name: Commit changes to a new feature branch
+        shell: bash -l {0}
+        run: |
+          # generate timestamped branch name and store as environmental variable
+          BRANCH_NAME="test-forecast-$(date +'%Y%m%d%H%M%S')"
+          echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+
+          # configure git
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH_NAME"
+
+          # stage only the test file
+          git add test_forecast.txt
+          git commit -m "Test forecast file commit on $(date +'%Y-%m-%d %H:%M:%S')"
+
+          # push changes
+          git push origin "$BRANCH_NAME"
+
+      - name: Create a pull request
+        shell: bash -l {0}
+        run: |
+          sudo apt install gh
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Test Forecast PR" --body "This is a test PR for the forecast workflow."
+
+      - name: Merge pull request
+        shell: bash -l {0}
+        run: |
+          gh pr merge --squash || echo "PR merge may have already happened"
+
+      - name: Delete branch
+        shell: bash -l {0}
+        run: |
+          for i in {1..5}; do
+            echo "Attempt $i to delete branch..."
+            if gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/${{ env.BRANCH_NAME }}; then
+              echo "Branch deleted"
+              break
+            fi
+            echo "Delete failed, retrying in 10 seconds..."
+            sleep 10
+          done
