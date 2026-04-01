@@ -112,7 +112,8 @@ jobs:
         shell: bash -l {0}
         run: |
           gh pr merge --squash
-
+      
+      # deletion failure after 5 retries won't stop the pipeline
       - name: Delete branch
         shell: bash -l {0}
         run: |
