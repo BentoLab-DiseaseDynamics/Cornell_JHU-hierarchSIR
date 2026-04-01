@@ -107,7 +107,23 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated CDC FluSight Forecast Update" --body "This PR includes the latest update of the CDC FluSight forecast."  
       
+      # merge and delete were split on 01-04-2026 
       - name: Merge pull request
         shell: bash -l {0}
         run: |
-          gh pr merge --delete-branch --squash
+          gh pr merge --squash
+
+      - name: Delete branch
+        shell: bash -l {0}
+        run: |
+          for i in {1..5}; do
+            echo "Attempt $i to delete branch..."
+
+            if gh api -X DELETE repos/${{ github.repository }}/git/refs/heads/${{ env.BRANCH_NAME }}; then
+              echo "Branch deleted"
+              break
+            fi
+
+            echo "Delete failed, retrying in 10 seconds..."
+            sleep 10
+          done
