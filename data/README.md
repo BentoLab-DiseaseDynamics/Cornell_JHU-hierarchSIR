@@ -8,6 +8,8 @@ Contains an overview of the raw data sources, and the conversion scripts used to
 
 + `national_state2020.txt`: Contains the 2020 US state names, abbreviation and corresponding two-digit FIPS. Downloaded from https://www.census.gov/library/reference/code-lists/ansi.html
 
++ `sc-est2023-agesex-civ.csv`: Contains the 2020-2023 US state population estimates. Downloaded from: https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www2.census.gov/programs-surveys/popest/datasets/2020-2023/state/asrh/sc-est2023-agesex-civ.csv&ved=2ahUKEwjel9Xo4euTAxWFg4kEHQxFIqIQFnoECAwQAQ&usg=AOvVaw0uXd1QJzPHUinJjBpFRA-1
+
 ## Interim
 
 ### Geography
@@ -34,4 +36,6 @@ To be filled out later.
 
 ### Cases
 
-+ `fetch-format_NHSN-HRD-data.py`: Script to collect NHSN HRD data, format it and archive it. Called by through a Github action: `~/.github/workflows/automated_data_collection.yml`.
++ `fetch-format_NHSN-HRD-data.py`: Script to collect NHSN HRD data, format it and archive it. Called through a Github action: `~/.github/workflows/fetch-preliminary_NHSN_HRD.yml`.
+
++ `backfill_preliminary-NHSN-HRD-data.py`: Script used to backfill the preliminary NHSN HRD data. Called through a Github action: `~/.github/workflows/backfill-preliminary_NHSN_HRD.yml`.
