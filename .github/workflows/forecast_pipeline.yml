@@ -18,8 +18,13 @@ jobs:
     needs: fetch_data
     uses: ./.github/workflows/backfill-preliminary_NHSN_HRD.yml
 
-  run_forecasts:
+  check_in_season:
     needs: backfill_data
+    uses: ./.github/workflows/check-in_season.yml
+
+  run_forecasts:
+    needs: check_in_season
+    if: needs.check_in_season.outputs.in_season == 'true'
     uses: ./.github/workflows/run-forecasts.yml
   
   submit_forecasts:

@@ -15,30 +15,6 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Check if in season
-        shell: bash
-        run: |
-          MONTH=$(date -u +%m)   # UTC month
-          DAY=$(date -u +%d)
-          echo "Month is $MONTH, day is $DAY"
-
-          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
-            echo "in_season=true" >> $GITHUB_ENV
-          elif [[ "$GITHUB_EVENT_NAME" == "workflow_run" ]]; then
-            if [[ $MONTH -ge 10 || $MONTH -lt 6 ]]; then
-              echo "in_season=true" >> $GITHUB_ENV
-            else
-              echo "in_season=false" >> $GITHUB_ENV
-            fi
-          else
-            echo "in_season=false" >> $GITHUB_ENV
-          fi
-
-      - name: Abort if not in season
-        if: env.in_season != 'true'
-        run: |
-          echo "Not in Oct 1 – Jun 1 season. Skipping deployment."
-          exit 0
 
       - name: Checkout repository
         uses: actions/checkout@v5
