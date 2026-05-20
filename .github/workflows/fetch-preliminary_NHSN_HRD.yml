@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Set up conda environment
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           activate-environment: BENTOLAB-HIERARCHSIR 
           environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
@@ -48,10 +48,6 @@ jobs:
           # stage ONLY the data file
           git add -A
           git commit -m "NHSN HRD preliminary data update on $(date +'%Y-%m-%d %H:%M:%S')"
-
-          # Reset all other untracked changes just in case
-          git reset --hard  
-          git clean -fd    
 
           # push changes
           git push origin "$BRANCH_NAME"
