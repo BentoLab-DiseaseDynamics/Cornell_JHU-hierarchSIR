@@ -69,10 +69,6 @@ jobs:
           git add -A
           git commit -m "forecast made on $(date +'%Y-%m-%d %H:%M:%S')"
 
-          # Reset all other untracked changes just in case
-          git reset --hard  
-          git clean -fd    
-
           # push changes
           git push origin "$BRANCH_NAME"
 
