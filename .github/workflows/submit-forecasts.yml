@@ -52,18 +52,22 @@ jobs:
           path: challenge-repo
           persist-credentials: false
     
-      # Add upstream remote and sync fork/main
-      - name: Sync CDC FluSight repository with upstream (cdcepi)
+      # Add upstream remote and fetch latest upstream state
+      - name: Fetch upstream challenge repo
         shell: bash
         working-directory: challenge-repo
-        env:
-          SUBMIT_FORECAST_TOKEN: ${{ secrets.SUBMIT_FORECAST_TOKEN }}
         run: |
           git remote add upstream https://github.com/cdcepi/FluSight-forecast-hub.git
           git fetch upstream
-          git checkout main
-          git merge --ff-only upstream/main || git rebase upstream/main
-          git push https://x-access-token:${SUBMIT_FORECAST_TOKEN}@github.com/BentoLab-DiseaseDynamics/FluSight-forecast-hub.git main
+
+      # Create forecast branch from upstream/main
+      - name: Create forecast branch
+        shell: bash
+        working-directory: challenge-repo
+        run: |
+          BRANCH="forecast-${{ env.REFERENCE_DATE }}"
+          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
+          git checkout -B "$BRANCH" upstream/main
 
       # Copy the file between repositories
       - name: Copy forecast file
@@ -80,21 +84,16 @@ jobs:
         env:
           SUBMIT_FORECAST_TOKEN: ${{ secrets.SUBMIT_FORECAST_TOKEN }}
         run: |
+
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Create branch using reference date
-          BRANCH="forecast-${{ env.REFERENCE_DATE }}"
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-          git checkout -B "$BRANCH"
-          
-          # Stage the new forecast file
+          # Stage forecast file
           git add model-output/Cornell_JHU-hierarchSIR/$(basename "${{ env.LATEST_FILE }}")
+          # Commit
           git commit -m "Add forecast for ${{ env.REFERENCE_DATE }}"
-
-          # Use PAT for authentication when pushing
-          git push https://x-access-token:${SUBMIT_FORECAST_TOKEN}@github.com/BentoLab-DiseaseDynamics/FluSight-forecast-hub.git "$BRANCH"
+          # Push forecast branch only
+          git push https://x-access-token:${SUBMIT_FORECAST_TOKEN}@github.com/BentoLab-DiseaseDynamics/FluSight-forecast-hub.git "${{ env.BRANCH }}"
 
       # Create pull request to upstream challenge repo
       - name: Create pull request to upstream challenge repo
