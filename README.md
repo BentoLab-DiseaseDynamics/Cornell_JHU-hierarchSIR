@@ -113,7 +113,7 @@ We automatically generate and submit forecasts through the use of Github Actions
 
 4. `run-forecasts.yml`: Deploys the forecast model on a local runner (owned by @twallema) because GH servers are to slow.
 
-5. `submit-forecasts.yml`: Submits the forecasts by committing the forecast file to the `BentoLab-DiseaseDynamics/Flusight-forecast-hub` fork of `cdcepi/Flusight-forecast-hub` (uses `SUBMIT_FORECAST_TOKEN`; fine-grained access token, approval for workflows 'read metadata' and ' Read and Write access to actions, code, and pull requests', valid until Nov 2026), and then opening a PR from `BentoLab-DiseaseDynamics/Flusight-forecast-hub` to `cdcepi/Flusight-forecast-hub` (uses `PR_CREATION_TOKEN`; classic personal access token, 'repo' and 'read:org' permissions, valid until June 2026).
+5. `submit-forecasts.yml`: Submits the forecasts by committing the forecast file to the `BentoLab-DiseaseDynamics/Flusight-forecast-hub` fork of `cdcepi/Flusight-forecast-hub` (uses `SUBMIT_FORECAST_TOKEN`; fine-grained access token, access on the BentoLab-DiseaseDynamics organization, access to repositories `Cornell_JHU-hierarchSIR` and `FluSight-forecast-hub`, approval for workflows 'read metadata' and ' Read and Write access to actions, code, and pull requests', valid until Nov 2026), and then opening a PR from `BentoLab-DiseaseDynamics/Flusight-forecast-hub` to `cdcepi/Flusight-forecast-hub` (uses `SUBMISSION_PR_CREATION_TOKEN`; classic personal access token, 'repo' and 'read:org' permissions, valid until June 2027).
 
 Post `run-forecasts.yml` a side branch is run to visualise the forecast and post it in the Bento Lab Slack (`visualise-forecasts.yml` and `post-visualisations_slack.yml`).
 
@@ -121,6 +121,4 @@ The workflows `fetch-preliminary_NHSN_HRD.yml`, `backfill-preliminary_NHSN_HRD.y
 
 Consider renaming:
 
-- `SUBMIT_FORECAST_TOKEN` --> `SUBMISSION_PUSH_TO_FORK`: Allows user @twallema to push forecast file to forked repo.
-
-- `PR_CREATION_TOKEN` --> `SUBMISSION_PR_CREATION_TOKEN`: Allows user @twallema to create a PR from forked repo to cdcepi/FluSight-forecast-hub
+- `SUBMIT_FORECAST_TOKEN` --> `SUBMISSION_PUSH_FORECAST_TO_CHALLENGE_REPO_FORK_TOKEN`: Allows user @twallema to push forecast file to forked repo.
