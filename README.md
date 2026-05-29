@@ -2,6 +2,8 @@
 
 A hybrid SIR - Bayesian hierarchical discrepancy model for infectious disease forecasting.
 
+https://doi.org/10.64898/2026.05.19.26353597
+
 ## Installation (local)
 
 Available platforms: macOS and Linux.
@@ -103,4 +105,20 @@ See `JHU-ROCKFISH_README.md`.
 
 ## Workflows
 
-- Automated forecast submission requires the use of two tokens PR_CREATION_TOKEN and SUBMIT_FORECAST_TOKEN, saved in the repository secrets (GH repo page > Settings > Secrets and Variables > Actions). Both tokens were generated from @twallema's personal GH account. PR_CREATION_TOKEN is a classic personal access token with 'repo' and 'read:org' permissions and is valid until the end of the challenge (May 31, 2026). This token is used to open a PR from BentoLab-DiseaseDynamics/Flusight-forecast-hub to cdcepi/Flusight-forecast-hub in @twallema's name. SUBMIT_FORECAST_TOKEN is a fine-grained access token, which grants @twallema access to the BentoLab-DiseaseDynamics/Cornell_JHU-hierarchSIR repository with approval for workflows 'read metadata' and ' Read and Write access to actions, code, and pull requests'. The token is valid until Nov 2026. Both tokens will have to be renewed during the summer of 2026 for the 2026-2027 challenge.
+We automatically generate and submit forecasts through the use of Github Actions. The chain of workflows is orchestrated from the master workflow file `forecast_pipeline.yml`, which triggers automatically on Wednesday at 16:00 UTC (corresponds to 12:00 EDT and 11:00 EST). It chains the following workflows together:
+
+1. `fetch-preliminary_NHSN_HRD.yml`: Fetches a preliminary version of the NHSN HRD dataset (released Wednesday around noon), which contains the hospital admission counts per U.S. state in the epiweek ending on the previous Saturday. 
+
+2. `backfill-preliminary_NHSN_HRD.yml`: We then corrected for systematic underreporting in these data using a generalized Dirichlet—multinomial reporting model formulated as a sequential beta-binomial survival process with coefficients estimated on a four-week rolling basis and posterior means expressed in closed form through prior conjugacy. See section 'B.7.1 Underreporting model' in https://doi.org/10.64898/2026.05.19.26353597.
+
+3. `check-in_season.yml`: Forecasts must be submitted from mid October to the end of May. This workflow terminates the pipeline if the date is not in season. If the workflow was manually triggered by the user the pipeline continues.
+
+4. `run-forecasts.yml`: Deploys the forecast model on a local runner (owned by @twallema) because GH servers are to slow.
+
+5. `submit-forecasts.yml`: Submits the forecasts by committing the forecast file to the `BentoLab-DiseaseDynamics/Flusight-forecast-hub` fork of `cdcepi/Flusight-forecast-hub` (uses `SUBMISSION_PUSH_FORECAST_TO_CHALLENGE_REPO_FORK_TOKEN`; fine-grained access token, access on the BentoLab-DiseaseDynamics organization, access to repository `FluSight-forecast-hub`**, approval for workflows 'read metadata' and ' Read and Write access to actions, code, and pull requests', valid until May 29 2027), and then opening a PR from `BentoLab-DiseaseDynamics/Flusight-forecast-hub` to `cdcepi/Flusight-forecast-hub` (uses `SUBMISSION_PR_CREATION_TOKEN`; classic personal access token, 'repo' and 'read:org' permissions, valid until June 2027).
+
+Post `run-forecasts.yml` a side branch is run to visualise the forecast and post it in the Bento Lab Slack (`visualise-forecasts.yml` and `post-visualisations_slack.yml`).
+
+The workflows `fetch-preliminary_NHSN_HRD.yml`, `backfill-preliminary_NHSN_HRD.yml`, `check-in_season.yml`, `run-forecasts.yml` and `visualise-forecasts.yml` use the automatically generated `GITHUB_TOKEN` with (contents: write) and (pull-requests: write) permission to create branches, commit files and open PRs in the `BentoLab-DiseaseDynamics/Cornell_JHU-hierarchSIR` repository. Tokens are created on @twallema's personal GH account (> settings > Develepor settings > Personal access tokens) and then stored under BentoLab-DiseaseDynamics/Cornell_JHU-hierarchSIR > Settings > Secrets and Variables > Actions.
+
+** The current token from @twallema has access to the forecast repository `Cornell_JHU-hierarchSIR` and `FluSight-forecast-hub`, but only access to `FluSight-forecast-hub` is strictly needed for the submission to work.

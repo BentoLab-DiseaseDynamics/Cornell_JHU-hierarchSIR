@@ -5,8 +5,8 @@ on:
   workflow_dispatch:      # Allows manual triggering
 
 permissions:
-  contents: write         # Allows pushing commits
-  pull-requests: write    # Allows creating and merging PRs
+  contents: write         # Allows the use of GITHUB_TOKEN for pushing commits
+  pull-requests: write    # Allows the use of GITHUB_TOKEN for creating and merging PRs
 
 jobs:
 
