@@ -2,6 +2,8 @@
 
 A hybrid SIR - Bayesian hierarchical discrepancy model for infectious disease forecasting.
 
+https://doi.org/10.64898/2026.05.19.26353597
+
 ## Installation (local)
 
 Available platforms: macOS and Linux.
