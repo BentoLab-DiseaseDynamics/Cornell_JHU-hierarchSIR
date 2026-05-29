@@ -38,10 +38,10 @@ jobs:
 
           if [[ $MONTH -ge 10 ]]; then
             START_DATE="${YEAR}-10-07"
-            END_DATE="$((YEAR + 1))-05-21"
+            END_DATE="$((YEAR + 1))-05-28"
           else
             START_DATE="$((YEAR - 1))-10-07"
-            END_DATE="${YEAR}-05-21"
+            END_DATE="${YEAR}-05-28"
           fi
 
           echo "Season start: $START_DATE"
