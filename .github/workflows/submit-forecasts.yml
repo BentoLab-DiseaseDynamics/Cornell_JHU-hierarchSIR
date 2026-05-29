@@ -100,10 +100,10 @@ jobs:
         shell: bash
         working-directory: challenge-repo
         env:
-          PR_CREATION_TOKEN: ${{ secrets.PR_CREATION_TOKEN }}
+          SUBMISSION_PR_CREATION_TOKEN: ${{ secrets.SUBMISSION_PR_CREATION_TOKEN }}
         run: |
           sudo apt install -y gh
-          echo "${PR_CREATION_TOKEN}" | gh auth login --with-token
+          echo "${SUBMISSION_PR_CREATION_TOKEN}" | gh auth login --with-token
           gh pr create \
             --repo cdcepi/FluSight-forecast-hub \
             --head BentoLab-DiseaseDynamics:${{ env.BRANCH }} \
