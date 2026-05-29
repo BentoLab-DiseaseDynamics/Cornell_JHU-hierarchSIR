@@ -117,7 +117,7 @@ We automatically generate and submit forecasts through the use of Github Actions
 
 Post `run-forecasts.yml` a side branch is run to visualise the forecast and post it in the Bento Lab Slack (`visualise-forecasts.yml` and `post-visualisations_slack.yml`).
 
-The workflows `fetch-preliminary_NHSN_HRD.yml`, `backfill-preliminary_NHSN_HRD.yml`, `check-in_season.yml`, `run-forecasts.yml` and `visualise-forecasts.yml` use the automatically generated `GITHUB_TOKEN` with (contents: write) and (pull-requests: write) permission to create branches, commit files and open PRs in the `BentoLab-DiseaseDynamics/Cornell_JHU-hierarchSIR` repository. Tokens are managed under BentoLab-DiseaseDynamics/Cornell_JHU-hierarchSIR > Settings > Secrets and Variables > Actions.
+The workflows `fetch-preliminary_NHSN_HRD.yml`, `backfill-preliminary_NHSN_HRD.yml`, `check-in_season.yml`, `run-forecasts.yml` and `visualise-forecasts.yml` use the automatically generated `GITHUB_TOKEN` with (contents: write) and (pull-requests: write) permission to create branches, commit files and open PRs in the `BentoLab-DiseaseDynamics/Cornell_JHU-hierarchSIR` repository. Tokens are created on @twallema's personal GH account (> settings > Develepor settings > Personal access tokens) and then stored under BentoLab-DiseaseDynamics/Cornell_JHU-hierarchSIR > Settings > Secrets and Variables > Actions.
 
 Consider renaming:
 
