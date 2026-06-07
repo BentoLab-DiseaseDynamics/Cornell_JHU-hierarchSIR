@@ -1,4 +1,4 @@
-model,fips_state,hyperparameter,initial_guess,exclude_None
+model,fips_state,hyperparameter,initial_guess,season_2025-2026
 SIR-1S,0,rho_h_s_0,0.374972558,0.47490832103755865
 SIR-1S,0,rho_h_scale_0,0.010042464,0.010743019235377106
 SIR-1S,0,f_R_mu_0,0.381481716,0.37106480186853097
