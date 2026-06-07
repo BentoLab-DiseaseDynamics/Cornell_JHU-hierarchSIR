@@ -38,15 +38,15 @@ season_end_month = 6
 
 # optimization parameters
 ## frequentist optimization
-n_nm = 1000                                                     # Number of NM search iterations
+n_nm = 750                                                     # Number of NM search iterations
 ## bayesian inference
-n_mcmc = 2000                                                   # Number of MCMC iterations
+n_mcmc = 5000                                                   # Number of MCMC iterations
 multiplier_mcmc = 3                                             # Total number of Markov chains = number of parameters * multiplier_mcmc
-print_n = 2000                                                  # Print diagnostics every `print_n`` iterations
-discard = 1000                                                  # Discard first `discard` iterations as burn-in
+print_n = 5000                                                  # Print diagnostics every `print_n`` iterations
+discard = 4000                                                  # Discard first `discard` iterations as burn-in
 thin = 50                                                       # Thinning factor emcee chains
 processes = int(os.environ.get('NUM_CORES', mp.cpu_count()))    # Number of CPUs to use
-n = 200                                                         # Number of simulations performed in MCMC goodness-of-fit figure
+n = 100                                                         # Number of simulations performed in MCMC goodness-of-fit figure
 
 #####################
 ## Parse arguments ##
@@ -107,7 +107,7 @@ if __name__ == '__main__':
             theta = list(pd.read_csv('../../data/interim/calibration/initial_guesses.csv', index_col=[0,1,2]).loc[(model_name, fips_state, slice(None)), season])
 
             # format data
-            data, states, log_likelihood_fnc, log_likelihood_fnc_args = make_data_pySODM_compatible(start_calibration, end_calibration, fips_state, type='consolidated')
+            data, states, log_likelihood_fnc, log_likelihood_fnc_args = make_data_pySODM_compatible(start_calibration, end_calibration, fips_state, type='preliminary')
 
             #################
             ## Setup model ##
