@@ -48,11 +48,11 @@ end_calibration_month = 6                                                       
 run_date = datetime.today().strftime("%Y-%m-%d")
 ## define number of chains
 chain_multiplier = 3
-max_n = 40000
+max_n = 50000
 pert = 0.05
 processes = int(os.environ.get('NUM_CORES', mp.cpu_count()))
 ## printing and postprocessing
-print_n = 40000
+print_n = 50000
 backend = None
 discard = 30000
 thin = 100
