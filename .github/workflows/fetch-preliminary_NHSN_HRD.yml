@@ -56,7 +56,7 @@ jobs:
         shell: bash -l {0}
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
-          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "Automated NHSN HRD Preliminary Data Update" --body "This PR includes the latest update of the preliminary NHSN HRD data."
+          gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "[Automated] NHSN HRD Preliminary Data Update" --body "This PR includes the latest update of the preliminary NHSN HRD data."
       
       # merge and delete were split on 01-04-2026 
       - name: Merge pull request
