@@ -39,7 +39,7 @@ skip_fips = []
 
 # calibration settings
 ## datasets
-identifiers_list = ['season_2026-2027']     # identifiers of training datasets
+identifiers_list = ['exclude_None']     # identifiers of training datasets
 seasons_list = [                                                                                                    # season to include in training
         ['2023-2024', '2024-2025', '2025-2026'],
         ]                                                                                                             

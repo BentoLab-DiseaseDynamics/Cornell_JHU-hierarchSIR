@@ -30,7 +30,7 @@ from hierarchSIR.utils import initialise_model, simout_to_hubverse, plot_fit, ma
 skip_fips = []
 
 # define hyperparameters to use
-hyperparameters = 'season_2026-2027'
+hyperparameters = 'exclude_None'
 
 # forecast settings/ save settings
 horizon = 4
