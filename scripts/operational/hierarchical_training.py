@@ -39,22 +39,22 @@ skip_fips = []
 
 # calibration settings
 ## datasets
-identifiers_list = ['exclude_None']     # identifiers of training datasets
+identifiers_list = ['season_2026-2027']     # identifiers of training datasets
 seasons_list = [                                                                                                    # season to include in training
-        ['2023-2024', '2024-2025'],
+        ['2023-2024', '2024-2025', '2025-2026'],
         ]                                                                                                             
 start_calibration_month = 9                                                                                        # start calibration on month 10, day 1
 end_calibration_month = 6                                                                                           # end calibration on month 5, day 1
 run_date = datetime.today().strftime("%Y-%m-%d")
 ## define number of chains
 chain_multiplier = 3
-max_n = 30000
+max_n = 50000
 pert = 0.05
 processes = int(os.environ.get('NUM_CORES', mp.cpu_count()))
 ## printing and postprocessing
-print_n = 30000
+print_n = 50000
 backend = None
-discard = 20000
+discard = 30000
 thin = 100
 
 # figure out what states to loop over
