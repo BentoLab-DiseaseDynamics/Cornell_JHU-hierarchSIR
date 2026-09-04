@@ -1,6 +1,8 @@
 name: Validate model setup
 
-on: [pull_request]
+on:
+  workflow_dispatch:
+
 jobs:
   validate_model_setup:
     runs-on: ${{ matrix.os }}
