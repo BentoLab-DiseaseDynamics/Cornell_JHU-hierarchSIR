@@ -20,8 +20,8 @@ jobs:
       - name: Set up conda environment
         uses: conda-incubator/setup-miniconda@v4
         with:
-          activate-environment: BENTOLAB-HIERARCHSIR 
-          environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
+          activate-environment: HIERARCHSIR 
+          environment-file: HIERARCHSIR_conda-env.yml  
 
       - name: Fetch NHSN HRD preliminary data (with retries and sleep)
         shell: bash -l {0}

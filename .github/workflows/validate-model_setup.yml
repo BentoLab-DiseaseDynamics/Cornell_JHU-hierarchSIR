@@ -15,18 +15,18 @@ jobs:
     - name: Set up conda environment
       uses: conda-incubator/setup-miniconda@v4
       with:
-        activate-environment: BENTOLAB-HIERARCHSIR
-        environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml
+        activate-environment: HIERARCHSIR
+        environment-file: HIERARCHSIR_conda-env.yml
 
     - name: Install Boost Libraries
       shell: bash -l {0}
       run: |
-        conda activate BENTOLAB-HIERARCHSIR
+        conda activate HIERARCHSIR
         sudo apt-get update && sudo apt-get install -y libboost-all-dev
 
-    - name: Install model code in BENTOLAB-HIERARCHSIR 
+    - name: Install model code in HIERARCHSIR 
       shell: bash -l {0}
       run: |
-        conda activate BENTOLAB-HIERARCHSIR
+        conda activate HIERARCHSIR
         python -m pip install --upgrade pip
         pip install -e . --force-reinstall

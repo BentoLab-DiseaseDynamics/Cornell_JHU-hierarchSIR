@@ -30,8 +30,8 @@ jobs:
       - name: Set up conda environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: BENTOLAB-HIERARCHSIR 
-          environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml  
+          activate-environment: HIERARCHSIR 
+          environment-file: HIERARCHSIR_conda-env.yml  
 
       - name: Run backfill script
         shell: bash -l {0}

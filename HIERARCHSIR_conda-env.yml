@@ -1,4 +1,4 @@
-name: BENTOLAB-HIERARCHSIR
+name: HIERARCHSIR
 channels:
   - conda-forge
   - defaults

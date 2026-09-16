@@ -21,15 +21,15 @@ conda update conda
 Setup/update the `environment`: All dependencies needed to run the scripts are collected in the conda `hierarchSIR_env.yml` file. To set up the environment,
 
 ```
-conda env create -f BENTOLAB-HIERARCHSIR_conda-env.yml
-conda activate HBENTOLAB-HIERARCHSIR
+conda env create -f HIERARCHSIR_conda-env.yml
+conda activate HHIERARCHSIR
 ```
 
 or alternatively, to update the environment (needed after adding a dependency),
 
 ```
-conda activate BENTOLAB-HIERARCHSIR
-conda env update -f BENTOLAB-HIERARCHSIR_conda-env.yml --prune
+conda activate HIERARCHSIR
+conda env update -f HIERARCHSIR_conda-env.yml --prune
 ```
 
 ### Install the Boost libraries 
@@ -53,7 +53,7 @@ Note: Boost is a C++ library and is not installed "inside" the conda environment
 Install the `hierarchSIR` Python package inside the conda environment using,
 
 ```
-conda activate BENTOLAB-HIERARCHSIR
+conda activate HIERARCHSIR
 pip install -e . --force-reinstall
 ```
 
@@ -69,7 +69,7 @@ The following procedure is performed on a state-by-state basis (for loop over st
 1. Activate the conda environment
 
     ```
-    conda activate BENTOLAB-HIERARCHSIR 
+    conda activate HIERARCHSIR 
     cd ~/scripts/operational/
     ```
 

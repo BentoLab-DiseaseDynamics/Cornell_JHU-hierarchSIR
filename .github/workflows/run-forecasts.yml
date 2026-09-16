@@ -28,28 +28,28 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Download and set up the BENTOLAB-HIERARCHSIR anaconda environment
+      - name: Download and set up the HIERARCHSIR anaconda environment
         uses: conda-incubator/setup-miniconda@v4
         with:
-          activate-environment: BENTOLAB-HIERARCHSIR
-          environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml
+          activate-environment: HIERARCHSIR
+          environment-file: HIERARCHSIR_conda-env.yml
 
       - name: Install Boost Libraries and compiler toolchain
         shell: bash -l {0}
         run: |
           sudo apt-get update && sudo apt-get install -y build-essential libboost-all-dev
 
-      - name: Install model in the BENTOLAB-HIERARCHSIR anaconda environment
+      - name: Install model in the HIERARCHSIR anaconda environment
         shell: bash -l {0}
         run: |
-          conda activate BENTOLAB-HIERARCHSIR
+          conda activate HIERARCHSIR
           python -m pip install --upgrade pip
           pip install -e . --force-reinstall
 
       - name: Compute forecasts 
         shell: bash -l {0}
         run: |
-          conda activate BENTOLAB-HIERARCHSIR
+          conda activate HIERARCHSIR
           python scripts/operational/forecast.py
       
       - name: Commit changes to a new feature branch
