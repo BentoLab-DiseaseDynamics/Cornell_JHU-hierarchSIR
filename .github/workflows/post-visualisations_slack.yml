@@ -26,13 +26,13 @@ jobs:
       - name: Set up conda environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: BENTOLAB-HIERARCHSIR
-          environment-file: BENTOLAB-HIERARCHSIR_conda-env.yml
+          activate-environment: HIERARCHSIR
+          environment-file: HIERARCHSIR_conda-env.yml
 
       - name: Post in Bento Lab Slack channel 
         shell: bash -l {0}
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         run: |
-          conda activate BENTOLAB-HIERARCHSIR
+          conda activate HIERARCHSIR
           python scripts/operational/slackbot.py
