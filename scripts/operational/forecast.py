@@ -45,8 +45,8 @@ n_mcmc = 2000                                                   # Number of MCMC
 multiplier_mcmc = 3                                             # Total number of Markov chains = number of parameters * multiplier_mcmc
 print_n = 2000                                                  # Print diagnostics every `print_n`` iterations
 discard = 1500                                                  # Discard first `discard` iterations as burn-in
-thin = 10                                                      # Thinning factor emcee chains
-processes = 12 # int(os.environ.get('NUM_CORES', mp.cpu_count()))    # Number of CPUs to use
+thin = 10                                                       # Thinning factor emcee chains
+processes = 8 # int(os.environ.get('NUM_CORES', mp.cpu_count()))    # Number of CPUs to use
 n = 1000                                                        # Number of simulations performed in MCMC goodness-of-fit figure
 
 # figure out what states to loop over
