@@ -22,7 +22,7 @@ jobs:
       shell: bash -l {0}
       run: |
         conda activate HIERARCHSIR
-        sudo apt-get update && sudo apt-get install -y libboost-all-dev
+        sudo -n apt-get update && sudo -n apt-get install -y libboost-all-dev
 
     - name: Install model code in HIERARCHSIR 
       shell: bash -l {0}

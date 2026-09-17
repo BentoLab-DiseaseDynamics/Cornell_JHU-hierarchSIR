@@ -118,7 +118,7 @@ jobs:
         env:
           SUBMISSION_PR_CREATION_TOKEN: ${{ secrets.SUBMISSION_PR_CREATION_TOKEN }}
         run: |
-          sudo apt install -y gh
+          sudo -n apt install -y gh
           echo "${SUBMISSION_PR_CREATION_TOKEN}" | gh auth login --with-token
           gh pr create \
             --repo cdcepi/FluSight-forecast-hub \
