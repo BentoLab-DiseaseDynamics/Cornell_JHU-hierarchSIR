@@ -22,7 +22,7 @@ jobs:
     needs: backfill_data
     uses: ./.github/workflows/check-in_season.yml
 
-  pause:
+  pause_10_min:
     needs: check_in_season
     if: needs.check_in_season.outputs.in_season == 'true'
     runs-on: ubuntu-latest
@@ -31,7 +31,7 @@ jobs:
         run: sleep 600
 
   run_forecasts:
-    needs: pause
+    needs: pause_10_min
     uses: ./.github/workflows/run-forecasts.yml
   
   submit_forecasts:
