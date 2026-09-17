@@ -22,9 +22,16 @@ jobs:
     needs: backfill_data
     uses: ./.github/workflows/check-in_season.yml
 
-  run_forecasts:
+  pause:
     needs: check_in_season
     if: needs.check_in_season.outputs.in_season == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 10 minutes to prioritise SCARCHhierarSIR
+        run: sleep 600
+
+  run_forecasts:
+    needs: pause
     uses: ./.github/workflows/run-forecasts.yml
   
   submit_forecasts:
