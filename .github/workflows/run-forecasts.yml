@@ -37,7 +37,7 @@ jobs:
       - name: Install Boost Libraries and compiler toolchain
         shell: bash -l {0}
         run: |
-          sudo apt-get update && sudo apt-get install -y build-essential libboost-all-dev
+          sudo -n apt-get update && sudo -n apt-get install -y build-essential libboost-all-dev
 
       - name: Install model in the HIERARCHSIR anaconda environment
         shell: bash -l {0}
