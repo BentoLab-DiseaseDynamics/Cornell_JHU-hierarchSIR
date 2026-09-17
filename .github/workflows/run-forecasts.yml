@@ -37,7 +37,7 @@ jobs:
       - name: Install Boost Libraries and compiler toolchain
         shell: bash -l {0}
         run: |
-          sudo apt-get update && sudo apt-get install -y build-essential libboost-all-dev
+          sudo -n apt-get update && sudo -n apt-get install -y build-essential libboost-all-dev
 
       - name: Install model in the HIERARCHSIR anaconda environment
         shell: bash -l {0}
@@ -75,7 +75,7 @@ jobs:
       - name: Create a pull request
         shell: bash -l {0}
         run: |
-          sudo apt install gh
+          sudo -n apt install gh
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh pr create --base main --head ${{ env.BRANCH_NAME }} --title "[Automated] CDC FluSight Forecast" --body "This PR includes the latest CDC FluSight forecast."  
       
