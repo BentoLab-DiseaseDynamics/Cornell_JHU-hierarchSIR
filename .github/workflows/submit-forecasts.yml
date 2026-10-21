@@ -83,7 +83,7 @@ jobs:
         shell: bash
         working-directory: challenge-repo
         run: |
-          BRANCH="forecast-${{ env.REFERENCE_DATE }}"
+          BRANCH="forecast-Cornell_JHU-hierarchSIR-${{ env.REFERENCE_DATE }}"
           echo "BRANCH=$BRANCH" >> $GITHUB_ENV
           git checkout -B "$BRANCH" upstream/main
 
