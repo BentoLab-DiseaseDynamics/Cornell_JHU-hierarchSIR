@@ -134,7 +134,7 @@ def save_interim_data(interim_data: pd.DataFrame, save_data_path: str) -> None:
     reference_date = max(interim_data['date']) + timedelta(weeks=1)
 
     # Verify it's a Saturday (it should be)
-    if not reference_date.dayofweek == 5:
+    if not reference_date.day_of_week == 5:
         raise ValueError("last date found in NHSN HRD dataset was not a Saturday.")
 
     # Save a copy in the data/interim/cases/collection/NHSN-HRD_archive
