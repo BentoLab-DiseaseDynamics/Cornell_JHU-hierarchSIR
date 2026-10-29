@@ -5,9 +5,6 @@ This script downloads, formats and archives the NHSN HRD dataset
 __author__      = "T.W. Alleman & Clif McKee"
 __copyright__   = "Copyright (c) 2025 by T.W. Alleman, IDD Group (JHUBSPH) & Bento Lab (Cornell CVM). All Rights Reserved."
 
-import sys
-sys.exit("error message")
-
 ##################
 ## Dependencies ##
 ##################
