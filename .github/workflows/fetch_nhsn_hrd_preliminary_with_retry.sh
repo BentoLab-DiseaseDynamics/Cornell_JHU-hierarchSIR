@@ -19,9 +19,9 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
   # run python script to fetch data --> if it fails, counts as a retry (intermittent errors have happened)
   if ! python data/conversion/cases/fetch-format_NHSN-HRD-data.py --preliminary True; then
     echo "::warning::Python data-fetch script failed on attempt $i of $MAX_RETRIES."
-    echo "The script will retry after ${WAIT_SECONDS}s, if attempts remain."
 
     if [[ "$i" -lt "$MAX_RETRIES" ]]; then
+      echo "Waiting $WAIT_SECONDS seconds before retrying..."
       sleep "$WAIT_SECONDS"
       continue
     else
