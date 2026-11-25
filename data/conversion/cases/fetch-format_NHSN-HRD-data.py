@@ -69,8 +69,11 @@ def get_raw_HRD_data(url: str) -> pd.DataFrame:
     (Consolidated) https://healthdata.gov/dataset/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/n3kj-exp9/about_data > Access this data > TEXT/CSV
     (Preliminary) https://healthdata.gov/CDC/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/dvvm-csyu/about_data > Access this data > TEXT/CSV
     """
-    raw_data = pd.read_csv(url, index_col=0, parse_dates=True)
+
+    usecols = ['Week Ending Date', 'Geographic aggregation', 'Total COVID-19 Admissions', 'Total Influenza Admissions', 'Total RSV Admissions']
+    raw_data = pd.read_csv(url, index_col=0, parse_dates=True, usecols=usecols, low_memory=False)   # usecols only works with low_memory=False
     raw_data_copy = raw_data.copy()
+
     return raw_data_copy.reset_index()
 
 def format_raw_HRD_data(raw_HRD_data: pd.DataFrame) -> pd.DataFrame:
