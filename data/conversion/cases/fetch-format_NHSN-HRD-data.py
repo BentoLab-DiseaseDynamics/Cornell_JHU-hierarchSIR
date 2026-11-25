@@ -97,6 +97,10 @@ def format_raw_HRD_data(raw_HRD_data: pd.DataFrame) -> pd.DataFrame:
 
     # Otherwise stupid SettingWithCopyWarning
     data = data.copy()
+    
+    # The CDC CSV export quotes counts with thousands separators (e.g. "3,270"), strip and coerce to numeric
+    for col in ['Total COVID-19 Admissions', 'Total Influenza Admissions', 'Total RSV Admissions']:
+        data[col] = pd.to_numeric(data[col].replace(',', '', regex=True), errors='coerce')
 
     # Get fips mappings
     fips_mappings = pd.read_csv(os.path.join(abs_dir, '../../interim/demography/demography.csv'), dtype={'fips_state': str})
