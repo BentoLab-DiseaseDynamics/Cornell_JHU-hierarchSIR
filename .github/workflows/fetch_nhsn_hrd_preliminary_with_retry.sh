@@ -4,9 +4,12 @@ set -euo pipefail
 DATA_DIR="data/interim/cases/NHSN-HRD_archive/preliminary"
 MAX_RETRIES="${MAX_RETRIES:-6}" # Use env vars if set, otherwise defaults
 WAIT_SECONDS="${WAIT_SECONDS:-3600}"
+MAX_PY_FAILURES="${MAX_PY_FAILURES:-3}" # Give up after this many python script errors
+PY_FAILURES=0
 
 echo "Starting NHSN HRD preliminary data fetch"
 echo "Max retries: $MAX_RETRIES"
+echo "Max python script failures before giving up: $MAX_PY_FAILURES"
 echo "Wait between retries: ${WAIT_SECONDS}s"
 
 mkdir -p "$DATA_DIR"
@@ -18,7 +21,13 @@ for ((i=1; i<=MAX_RETRIES; i++)); do
 
   # run python script to fetch data --> if it fails, counts as a retry (intermittent errors have happened)
   if ! python data/conversion/cases/fetch-format_NHSN-HRD-data.py --preliminary True; then
-    echo "::warning::Python data-fetch script failed on attempt $i of $MAX_RETRIES."
+    PY_FAILURES=$((PY_FAILURES + 1))
+    echo "::warning::Python data-fetch script failed on attempt $i of $MAX_RETRIES (python failure $PY_FAILURES of $MAX_PY_FAILURES)."
+
+    if [[ "$PY_FAILURES" -ge "$MAX_PY_FAILURES" ]]; then
+      echo "::error::Python data-fetch script has failed $PY_FAILURES times — giving up instead of retrying further."
+      exit 1
+    fi
 
     if [[ "$i" -lt "$MAX_RETRIES" ]]; then
       echo "Waiting $WAIT_SECONDS seconds before retrying..."
