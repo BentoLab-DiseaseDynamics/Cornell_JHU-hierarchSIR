@@ -34,11 +34,12 @@ parser.add_argument("--preliminary", type=str_to_bool, default=False, help="Down
 args = parser.parse_args()
 
 # change download link and save folder
+## 2026-11-25: endpoint changed
 if args.preliminary:
-    url = 'https://data.cdc.gov/api/views/mpgq-jmmr/rows.csv?accessType=DOWNLOAD'
+    url = 'https://data.cdc.gov/api/v3/views/mpgq-jmmr/export.csv?accessType=DOWNLOAD'
     save_folder = '../../interim/cases/NHSN-HRD_archive/preliminary/'
 else:
-    url = 'https://data.cdc.gov/api/views/ua7e-t2fy/rows.csv?accessType=DOWNLOAD'
+    url = 'https://data.cdc.gov/api/v3/views/ua7e-t2fy/export.csv?accessType=DOWNLOAD'
     save_folder = '../../interim/cases/NHSN-HRD_archive/consolidated/'
 
 ####################
@@ -64,7 +65,9 @@ def get_raw_HRD_data(url: str) -> pd.DataFrame:
     notes
     -----
 
-    Data source: https://healthdata.gov/dataset/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/n3kj-exp9/about_data > Access this data > TEXT/CSV
+    Data sources:
+    (Consolidated) https://healthdata.gov/dataset/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/n3kj-exp9/about_data > Access this data > TEXT/CSV
+    (Preliminary) https://healthdata.gov/CDC/Weekly-Hospital-Respiratory-Data-HRD-Metrics-by-Ju/dvvm-csyu/about_data > Access this data > TEXT/CSV
     """
     raw_data = pd.read_csv(url, index_col=0, parse_dates=True)
     raw_data_copy = raw_data.copy()
